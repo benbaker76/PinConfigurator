@@ -838,7 +838,7 @@
 	[self update];
 }
 
-- (BOOL)getIndexOfAudaudioNode:(NSArray *)hdaConfigDefaultArray index:(int *)index
+- (BOOL)getIndexOfAudioNode:(NSArray *)hdaConfigDefaultArray index:(int *)index
 {
 	*index = -1;
 	
@@ -1109,7 +1109,7 @@
 	{
 		int configEntryIndex = -1;
 		
-		[self getIndexOfAudaudioNode:_hdaConfigDefaultArray index:&configEntryIndex];
+		[self getIndexOfAudioNode:_hdaConfigDefaultArray index:&configEntryIndex];
 		
 		[[self importPinOutlineView] selectRowIndexes:[NSIndexSet indexSetWithIndex:configEntryIndex] byExtendingSelection:NO];
 		[[self importPinOutlineView] scrollRowToVisible:configEntryIndex];
@@ -1144,7 +1144,7 @@
 	NSMutableArray *hdaConfigDefaultMutableArray = [NSMutableArray arrayWithArray:hdaConfigDefaultArray];
 	int configEntryIndex = -1;
 	
-	[self getIndexOfAudaudioNode:hdaConfigDefaultArray index:&configEntryIndex];
+	[self getIndexOfAudioNode:hdaConfigDefaultArray index:&configEntryIndex];
 
 	if (configEntryIndex != -1)
 	{
