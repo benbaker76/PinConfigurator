@@ -11,7 +11,7 @@
 #include "AudioDevice.h"
 #include <IOKit/IOKitLib.h>
 
-bool getIORegChild(io_service_t device, NSArray *nameArray, io_service_t *foundDevice, uint32_t *foundIndex, bool useClass, bool recursive)
+bool getIORegChild(io_service_t device, NSString *name, io_service_t *foundDevice, bool recursive)
 {
 	kern_return_t kr;
 	io_iterator_t childIterator;
@@ -23,28 +23,18 @@ bool getIORegChild(io_service_t device, NSArray *nameArray, io_service_t *foundD
 	
 	for (io_service_t childDevice; IOIteratorIsValid(childIterator) && (childDevice = IOIteratorNext(childIterator)); IOObjectRelease(childDevice))
 	{
-		io_name_t name;
-		kr = (useClass ? IOObjectGetClass(childDevice, name) : IORegistryEntryGetName(childDevice, name));
-		
-		if (kr == KERN_SUCCESS)
+		if (IOObjectConformsTo(childDevice, [name UTF8String]))
 		{
-			for (int i = 0; i < [nameArray count]; i++)
-			{
-				if (CFStringCompare((__bridge CFStringRef)[NSString stringWithUTF8String:name], (__bridge CFStringRef)[nameArray objectAtIndex:i], 0) == kCFCompareEqualTo)
-				{
-					*foundDevice = childDevice;
-					*foundIndex = i;
-					
-					IOObjectRelease(childIterator);
-					
-					return true;
-				}
-			}
+			*foundDevice = childDevice;
+			
+			IOObjectRelease(childIterator);
+			
+			return true;
 		}
 		
 		if (recursive)
 		{
-			if (getIORegChild(childDevice, nameArray, foundDevice, foundIndex, useClass, recursive))
+			if (getIORegChild(childDevice, name, foundDevice, recursive))
 				return true;
 		}
 	}
@@ -52,14 +42,7 @@ bool getIORegChild(io_service_t device, NSArray *nameArray, io_service_t *foundD
 	return false;
 }
 
-bool getIORegChild(io_service_t device, NSArray *nameArray, io_service_t *foundDevice, bool useClass, bool recursive)
-{
-	uint32_t foundIndex = 0;
-	
-	return getIORegChild(device, nameArray, foundDevice, &foundIndex, useClass, recursive);
-}
-
-bool getIORegParent(io_service_t device, NSArray *nameArray, io_service_t *foundDevice, uint32_t *foundIndex, bool useClass, bool recursive)
+bool getIORegParent(io_service_t device, NSString *name, io_service_t *foundDevice, bool recursive)
 {
 	kern_return_t kr;
 	io_iterator_t parentIterator;
@@ -71,40 +54,23 @@ bool getIORegParent(io_service_t device, NSArray *nameArray, io_service_t *found
 	
 	for (io_service_t parentDevice; IOIteratorIsValid(parentIterator) && (parentDevice = IOIteratorNext(parentIterator)); IOObjectRelease(parentDevice))
 	{
-		io_name_t name;
-		kr = (useClass ? IOObjectGetClass(parentDevice, name) : IORegistryEntryGetName(parentDevice, name));
-		
-		if (kr == KERN_SUCCESS)
+		if (IOObjectConformsTo(parentDevice, [name UTF8String]))
 		{
-			for (int i = 0; i < [nameArray count]; i++)
-			{
-				if (CFStringCompare((__bridge CFStringRef)[NSString stringWithUTF8String:name], (__bridge CFStringRef)[nameArray objectAtIndex:i], 0) == kCFCompareEqualTo)
-				{
-					*foundDevice = parentDevice;
-					*foundIndex = i;
-					
-					IOObjectRelease(parentIterator);
-					
-					return true;
-				}
-			}
+			*foundDevice = parentDevice;
+			
+			IOObjectRelease(parentIterator);
+			
+			return true;
 		}
 		
 		if (recursive)
 		{
-			if (getIORegParent(parentDevice, nameArray, foundDevice, foundIndex, useClass, recursive))
+			if (getIORegParent(parentDevice, name, foundDevice, recursive))
 				return true;
 		}
 	}
 	
 	return false;
-}
-
-bool getIORegParent(io_service_t device, NSArray *nameArray, io_service_t *foundDevice, bool useClass, bool recursive)
-{
-	uint32_t foundIndex = 0;
-	
-	return getIORegParent(device, nameArray, foundDevice, &foundIndex, useClass, recursive);
 }
 
 bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
@@ -119,13 +85,13 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 	
 	for (io_service_t device; IOIteratorIsValid(iterator) && (device = IOIteratorNext(iterator)); IOObjectRelease(device))
 	{
-		io_name_t name;
+		io_name_t name {};
 		kr = IORegistryEntryGetName(device, name);
 		
 		if (kr != KERN_SUCCESS)
 			continue;
 		
-		io_name_t className;
+		io_name_t className {};
 		kr = IOObjectGetClass(device, className);
 		
 		if (kr != KERN_SUCCESS)
@@ -133,9 +99,9 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 		
 		io_service_t parentDevice;
 		
-		if (getIORegParent(device, @[@"IOPCIDevice"], &parentDevice, true, true))
+		if (getIORegParent(device, @"IOPCIDevice", &parentDevice, true))
 		{
-			io_name_t parentName;
+			io_name_t parentName {};
 			kr = IORegistryEntryGetName(parentDevice, parentName);
 			
 			if (kr == KERN_SUCCESS)
@@ -154,7 +120,7 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 					
 					if (kr == KERN_SUCCESS)
 					{
-						NSDictionary *propertyDictionary = (__bridge NSDictionary *)propertyDictionaryRef;
+						NSMutableDictionary *propertyDictionary = (__bridge NSMutableDictionary *)propertyDictionaryRef;
 						
 						NSData *deviceID = [parentPropertyDictionary objectForKey:@"device-id"];
 						NSData *vendorID = [parentPropertyDictionary objectForKey:@"vendor-id"];
@@ -165,7 +131,7 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 						NSData *pinConfigurations = [parentPropertyDictionary objectForKey:@"PinConfigurations"];
 						
 						NSDictionary *digitalAudioCapabilities = [propertyDictionary objectForKey:@"DigitalAudioCapabilities"];
-						NSNumber *codecAddress = [propertyDictionary objectForKey:@"IOHDACodecAddress"];
+						NSNumber *codecAddressNumber = [propertyDictionary objectForKey:@"IOHDACodecAddress"];
 						NSNumber *venderProductIDNumber = [propertyDictionary objectForKey:@"IOHDACodecVendorID"];
 						NSNumber *revisionIDNumber = [propertyDictionary objectForKey:@"IOHDACodecRevisionID"];
 						
@@ -179,15 +145,15 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 						uint32_t deviceIDNew = (vendorIDInt << 16) | deviceIDInt;
 						uint32_t subDeviceIDNew = (subSystemVendorIDInt << 16) | subSystemIDInt;
 						
-						AudioDevice *audioDevice = [[AudioDevice alloc] initWithDeviceClass:[NSString stringWithUTF8String:parentName] deviceID:deviceIDNew revisionID:revisionIDInt alcLayoutID:alcLayoutIDInt subDeviceID:subDeviceIDNew codecAddress:[codecAddress intValue] codecID:[venderProductIDNumber intValue] codecRevisionID:[revisionIDNumber intValue] pinConfigurations:pinConfigurations digitalAudioCapabilities:digitalAudioCapabilities];
+						AudioDevice *audioDevice = [[AudioDevice alloc] initWithDeviceClass:[NSString stringWithUTF8String:parentName] deviceID:deviceIDNew revisionID:revisionIDInt alcLayoutID:alcLayoutIDInt subDeviceID:subDeviceIDNew codecAddress:[codecAddressNumber unsignedIntValue] codecID:[venderProductIDNumber unsignedIntValue] codecRevisionID:[revisionIDNumber unsignedIntValue] pinConfigurations:pinConfigurations digitalAudioCapabilities:digitalAudioCapabilities];
 						
 						[*audioDeviceArray addObject:audioDevice];
 						
 						io_service_t childDevice;
 						
-						if (getIORegChild(device, @[@"AppleHDACodecGeneric"], &childDevice, true, true))
+						if (getIORegChild(device, @"AppleHDACodec", &childDevice, true))
 						{
-							io_name_t childName;
+							io_name_t childName {};
 							kr = IORegistryEntryGetName(childDevice, childName);
 							
 							if (kr == KERN_SUCCESS)
@@ -215,6 +181,7 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 									
 									NSMutableDictionary *childPropertyDictionary = (__bridge NSMutableDictionary *)childPropertyDictionaryRef;
 									audioDevice.hdaConfigDefaultDictionary = [childPropertyDictionary objectForKey:@"HDAConfigDefault"];
+									audioDevice.bundleID = [childPropertyDictionary objectForKey:@"CFBundleIdentifier"];
 								}
 							}
 						}

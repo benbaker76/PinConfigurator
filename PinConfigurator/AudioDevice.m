@@ -14,16 +14,16 @@
 {
 	if (self = [super init])
 	{
-		self.deviceClass = deviceClass;
-		self.deviceID = deviceID;
-		self.revisionID = revisionID;
-		self.alcLayoutID = alcLayoutID;
-		self.subDeviceID = subDeviceID;
-		self.codecAddress = codecAddress;
-		self.codecID = codecID;
-		self.codecRevisionID = codecRevisionID;
-		self.pinConfigurations = pinConfigurations;
-		self.digitalAudioCapabilities = digitalAudioCapabilities;
+		_deviceClass = deviceClass;
+		_deviceID = deviceID;
+		_revisionID = revisionID;
+		_alcLayoutID = alcLayoutID;
+		_subDeviceID = subDeviceID;
+		_codecAddress = codecAddress;
+		_codecID = codecID;
+		_codecRevisionID = codecRevisionID;
+		_pinConfigurations = pinConfigurations;
+		_digitalAudioCapabilities = digitalAudioCapabilities;
 	}
 	
 	return self;
@@ -38,6 +38,7 @@
 	[_layoutIDArray release];
 	[_revisionArray release];
 	[_hdaConfigDefaultDictionary release];
+	[_bundleID release];
 	
 	[super dealloc];
 }
