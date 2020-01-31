@@ -119,6 +119,9 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 		{
 			NSMutableDictionary *propertyDictionary = (__bridge NSMutableDictionary *)propertyDictionaryRef;
 			
+			NSString *bundleID = [propertyDictionary objectForKey:@"CFBundleIdentifier"];
+			NSString *deviceName = [propertyDictionary objectForKey:@"IOAudioDeviceName"];
+			
 			io_service_t parentDevice;
 			
 			if (getIORegParent(device, @"IOPCIDevice", &parentDevice, true))
@@ -131,20 +134,18 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 				{
 					NSMutableDictionary *parentPropertyDictionary = (__bridge NSMutableDictionary *)parentPropertyDictionaryRef;
 					
-					NSString *bundleID = [propertyDictionary objectForKey:@"CFBundleIdentifier"];
 					uint32_t deviceID = propertyToUInt32([parentPropertyDictionary objectForKey:@"device-id"]);
 					uint32_t vendorID = propertyToUInt32([parentPropertyDictionary objectForKey:@"vendor-id"]);
 					uint32_t revisionID = propertyToUInt32([parentPropertyDictionary objectForKey:@"revision-id"]);
 					uint32_t alcLayoutID = propertyToUInt32([parentPropertyDictionary objectForKey:@"alc-layout-id"]);
 					uint32_t subSystemID = propertyToUInt32([parentPropertyDictionary objectForKey:@"subsystem-id"]);
 					uint32_t subSystemVendorID = propertyToUInt32([parentPropertyDictionary objectForKey:@"subsystem-vendor-id"]);
-					NSData *pinConfigurations = [parentPropertyDictionary objectForKey:@"PinConfigurations"];
 					
 					uint32_t deviceIDNew = (vendorID << 16) | deviceID;
 					uint32_t subDeviceIDNew = (subSystemVendorID << 16) | subSystemID;
 					
-					AudioDevice *audioDevice = [[AudioDevice alloc] initWithDeviceBundleID:bundleID deviceClass:[NSString stringWithUTF8String:className] deviceID:deviceIDNew revisionID:revisionID alcLayoutID:alcLayoutID subDeviceID:subDeviceIDNew pinConfigurations:pinConfigurations];
-					
+					AudioDevice *audioDevice = [[AudioDevice alloc] initWithDeviceBundleID:bundleID deviceClass:[NSString stringWithUTF8String:className] deviceName:deviceName deviceID:deviceIDNew revisionID:revisionID alcLayoutID:alcLayoutID subDeviceID:subDeviceIDNew];
+
 					io_service_t codecDevice;
 					
 					if (getIORegParent(device, @"IOHDACodecDevice", &codecDevice, true))
@@ -161,6 +162,23 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 							audioDevice.codecAddress = propertyToUInt32([codecPropertyDictionary objectForKey:@"IOHDACodecAddress"]);
 							audioDevice.codecID = propertyToUInt32([codecPropertyDictionary objectForKey:@"IOHDACodecVendorID"]);
 							audioDevice.revisionID = propertyToUInt32([codecPropertyDictionary objectForKey:@"IOHDACodecRevisionID"]);
+						}
+					}
+					
+					if (getIORegParent(device, @"AppleHDACodec", &codecDevice, true))
+					{
+						CFMutableDictionaryRef codecPropertyDictionaryRef = 0;
+						
+						kr = IORegistryEntryCreateCFProperties(codecDevice, &codecPropertyDictionaryRef, kCFAllocatorDefault, kNilOptions);
+						
+						if (kr == KERN_SUCCESS)
+						{
+							NSMutableDictionary *codecPropertyDictionary = (__bridge NSMutableDictionary *)codecPropertyDictionaryRef;
+							
+							NSArray *hdaConfigDefaultArray = [codecPropertyDictionary objectForKey:@"HDAConfigDefault"];
+							
+							if (hdaConfigDefaultArray != nil && [hdaConfigDefaultArray count] > 0)
+								audioDevice.hdaConfigDefaultDictionary = [hdaConfigDefaultArray objectAtIndex:0];
 						}
 					}
 					

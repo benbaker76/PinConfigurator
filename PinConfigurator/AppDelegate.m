@@ -53,16 +53,17 @@
 	{
 		for (AudioDevice *audioDevice in _audioDeviceArray)
 		{
-			NSString *vendorName, *codecName;
+			NSString *codecVendorName = nil, *codecName = nil;
 			
-			[self getAudioVendorName:audioDevice.deviceID vendorName:&vendorName];
+			[self getAudioVendorName:audioDevice.deviceID vendorName:&codecVendorName];
 			[self getAudioCodecName:audioDevice.codecID revisionID:audioDevice.codecRevisionID name:&codecName];
 			
 			audioDevice.codecName = codecName;
+			audioDevice.codecVendorName = codecVendorName;
 			
 			//NSLog(@"DeviceID: 0x%08X (%@) LayoutID: %d SubDeviceID: 0x%08X Codec: %@ (0x%08X) Revision: 0x%04X", audioDevice.deviceID, vendorName, audioDevice.alcLayoutID, audioDevice.subDeviceID, codecName, audioDevice.codecID, audioDevice.revisionID & 0xFFFF);
 			
-			if (_audioDevice == nil)
+			if ([self isAppleHDAAudioDevice:audioDevice])
 			{
 				_audioDevice = audioDevice;
 				_codecName = audioDevice.codecName;
@@ -298,10 +299,10 @@
 
 - (void) parseConfigData:(NSData *)configData
 {
-	_codecAddress = 0;
-	_codecName = @"";
-	_codecID = 0;
-	_layoutID = 0;
+	//_codecAddress = 0;
+	//_codecName = @"";
+	//_codecID = 0;
+	//_layoutID = 0;
 	
 	if ([configData length] & 3)
 		return;
@@ -667,10 +668,10 @@
 				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.revisionID]];
 				break;
 			case 2:
-				if ([audioDevice.deviceClass isEqualToString:@"AppleHDADriver"])
+				if (audioDevice.codecID != 0)
 					[cell setIntValue:audioDevice.alcLayoutID];
 				else
-					[cell setStringValue:@"-"];
+					[cell setStringValue:(@"-")];
 				break;
 			case 3:
 				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.subDeviceID]];
@@ -679,16 +680,13 @@
 				[cell setStringValue:[NSString stringWithFormat:@"0x%X", audioDevice.codecAddress]];
 				break;
 			case 5:
-				if (audioDevice.codecID != 0)
-					[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.codecID]];
-				else
-					[cell setStringValue:@"-"];
+				[cell setStringValue:(audioDevice.codecID != 0 ? [NSString stringWithFormat:@"0x%08X", audioDevice.codecID] : @"-")];
 				break;
 			case 6:
 				[cell setStringValue:[NSString stringWithFormat:@"0x%04X", audioDevice.codecRevisionID & 0xFFFF]];
 				break;
 			case 7:
-				[cell setStringValue:audioDevice.codecName];
+				[cell setStringValue:(audioDevice.codecID != 0 ? audioDevice.codecName : audioDevice.deviceName)];
 				break;
 		}
 	}
@@ -1202,7 +1200,7 @@
 	{
 		AudioDevice *audioDevice = _audioDeviceArray[i];
 		
-		if ([audioDevice.deviceClass isEqualToString:@"AppleHDADriver"])
+		if ([self isAppleHDAAudioDevice:audioDevice])
 		{
 			selectedAudioDevice = i;
 			break;
@@ -1288,9 +1286,6 @@
 			_codecID = [[hdaConfigDictionary objectForKey:@"CodecID"] intValue];
 			NSData *configData = [hdaConfigDictionary objectForKey:@"ConfigData"];
 			_layoutID = [[hdaConfigDictionary objectForKey:@"LayoutID"] intValue];
-			//NSData *wakeConfigData = [hdaConfigDictionary objectForKey:@"WakeConfigData"];
-			//NSMutableData *allConfigData = [NSMutableData dataWithData:configData];
-			//[allConfigData appendData:wakeConfigData];
 			
 			if ([configData length] > 0)
 			{
@@ -1324,26 +1319,23 @@
 	{
 		NSInteger selectedRow = [[self importIORegOutlineView] selectedRow];
 		AudioDevice *audioDevice = [_audioDeviceArray objectAtIndex:selectedRow];
+
+		NSMutableDictionary *hdaConfigDefaultDictionary = audioDevice.hdaConfigDefaultDictionary;
 		
-		if (audioDevice)
+		if (hdaConfigDefaultDictionary != nil)
 		{
-			_codecName = audioDevice.codecName;
-			_codecID = audioDevice.codecID;
-			NSData *configData = audioDevice.pinConfigurations;
-			_layoutID = audioDevice.alcLayoutID;
-			//NSData *wakeConfigData = [hdaConfigDictionary objectForKey:@"WakeConfigData"];
-			//NSMutableData *allConfigData = [NSMutableData dataWithData:configData];
-			//[allConfigData appendData:wakeConfigData];
+			NSData *bootConfigData = [hdaConfigDefaultDictionary objectForKey:@"BootConfigData"];
 			
-			/* if ([configData length] > 0)
+			if (bootConfigData != nil)
 			{
-				const char *configDataBytes = (const char *)[configData bytes];
-				_codecAddress = HINIBBLE(configDataBytes[0]);
-			} */
+				_codecName = audioDevice.codecName;
+				_codecID = audioDevice.codecID;
+				_layoutID = audioDevice.alcLayoutID;
+				
+				[[self layoutIDTextField] setIntValue:_layoutID];
 			
-			[[self layoutIDTextField] setIntValue:_layoutID];
-			
-			[self parseIORegConfigData:configData];
+				[self parseConfigData:bootConfigData];
+			}
 		}
 	}
 	
@@ -1618,6 +1610,16 @@
 	[defaults setInteger:_nodeOptions forKey:@"NodeOptions"];
 	
 	[defaults synchronize];
+}
+
+- (bool)isAppleHDAAudioDevice:(AudioDevice *)audioDevice
+{
+	return ([audioDevice.deviceClass isEqualToString:@"AppleHDADriver"]);
+}
+
+- (bool)isVoodooHDAAudioDevice:(AudioDevice *)audioDevice
+{
+	return ([audioDevice.deviceClass isEqualToString:@"VoodooHDADevice"]);
 }
 
 - (IBAction)generalOptionClicked:(id)sender
