@@ -11,6 +11,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+uint32_t propertyToUInt32(id value);
 bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray);
 
 #endif /* IORegTools_hpp */

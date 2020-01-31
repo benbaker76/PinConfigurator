@@ -58,6 +58,8 @@
 			[self getAudioVendorName:audioDevice.deviceID vendorName:&vendorName];
 			[self getAudioCodecName:audioDevice.codecID revisionID:audioDevice.codecRevisionID name:&codecName];
 			
+			audioDevice.codecName = codecName;
+			
 			//NSLog(@"DeviceID: 0x%08X (%@) LayoutID: %d SubDeviceID: 0x%08X Codec: %@ (0x%08X) Revision: 0x%04X", audioDevice.deviceID, vendorName, audioDevice.alcLayoutID, audioDevice.subDeviceID, codecName, audioDevice.codecID, audioDevice.revisionID & 0xFFFF);
 			
 			if (_audioDevice == nil)
@@ -634,7 +636,7 @@
 				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", [[hdaConfigDictionary objectForKey:@"CodecID"] intValue]]];
 				break;
 			case 2:
-				[cell setStringValue:[NSString stringWithFormat:@"%d", [[hdaConfigDictionary objectForKey:@"LayoutID"] intValue]]];
+				[cell setIntValue:[[hdaConfigDictionary objectForKey:@"LayoutID"] intValue]];
 				break;
 			case 3:
 			{
@@ -656,10 +658,6 @@
 	{
 		AudioDevice *audioDevice = item;
 		
-		NSString *codecName = nil;
-		
-		[self getAudioCodecName:audioDevice.codecID revisionID:audioDevice.codecRevisionID name:&codecName];
-		
 		switch ([[tableColumn identifier] intValue])
 		{
 			case 0:
@@ -669,7 +667,10 @@
 				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.revisionID]];
 				break;
 			case 2:
-				[cell setIntValue:audioDevice.alcLayoutID];
+				if ([audioDevice.deviceClass isEqualToString:@"AppleHDADriver"])
+					[cell setIntValue:audioDevice.alcLayoutID];
+				else
+					[cell setStringValue:@"-"];
 				break;
 			case 3:
 				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.subDeviceID]];
@@ -678,13 +679,16 @@
 				[cell setStringValue:[NSString stringWithFormat:@"0x%X", audioDevice.codecAddress]];
 				break;
 			case 5:
-				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.codecID]];
+				if (audioDevice.codecID != 0)
+					[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.codecID]];
+				else
+					[cell setStringValue:@"-"];
 				break;
 			case 6:
 				[cell setStringValue:[NSString stringWithFormat:@"0x%04X", audioDevice.codecRevisionID & 0xFFFF]];
 				break;
 			case 7:
-				[cell setStringValue:codecName];
+				[cell setStringValue:audioDevice.codecName];
 				break;
 		}
 	}
@@ -880,13 +884,18 @@
 
 - (bool)getAudioCodecName:(uint32_t)deviceID revisionID:(uint16_t)revisionID name:(NSString **)name
 {
+	*name = @"???";
+	
+	if (deviceID == 0)
+		return false;
+	
 	for (NSDictionary *codecDictionary in _codecsArray)
 	{
 		NSNumber *findDeviceID = [codecDictionary objectForKey:@"DeviceID"];
 		NSNumber *findRevisionID = [codecDictionary objectForKey:@"RevisionID"];
 		NSString *findName = [codecDictionary objectForKey:@"Name"];
 		
-		if (deviceID == [findDeviceID intValue] && revisionID == [findRevisionID intValue])
+		if (deviceID == [findDeviceID unsignedIntValue] && revisionID == [findRevisionID unsignedIntValue])
 		{
 			*name = findName;
 			
@@ -899,15 +908,13 @@
 		NSNumber *findDeviceID = [codecDictionary objectForKey:@"DeviceID"];
 		NSString *findName = [codecDictionary objectForKey:@"Name"];
 		
-		if (deviceID == [findDeviceID intValue])
+		if (deviceID == [findDeviceID unsignedIntValue])
 		{
 			*name = findName;
 			
 			return true;
 		}
 	}
-	
-	*name = @"???";
 	
 	return false;
 }
@@ -1188,6 +1195,22 @@
 - (IBAction)importIORegistry:(id)sender
 {
 	[[self importIORegOutlineView] reloadData];
+	
+	int selectedAudioDevice = -1;
+	
+	for (int i = 0; i < [_audioDeviceArray count]; i++)
+	{
+		AudioDevice *audioDevice = _audioDeviceArray[i];
+		
+		if ([audioDevice.deviceClass isEqualToString:@"AppleHDADriver"])
+		{
+			selectedAudioDevice = i;
+			break;
+		}
+	}
+	
+	NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:selectedAudioDevice];
+	[[self importIORegOutlineView] selectRowIndexes:indexSet byExtendingSelection:NO];
 	
 	[NSApp beginSheet:[self importIORegPanel] modalForWindow:[self mainWindow] modalDelegate:0 didEndSelector:0 contextInfo:0];
 }
