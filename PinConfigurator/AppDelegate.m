@@ -668,10 +668,7 @@
 				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.revisionID]];
 				break;
 			case 2:
-				if (audioDevice.codecID != 0)
-					[cell setIntValue:audioDevice.alcLayoutID];
-				else
-					[cell setStringValue:(@"-")];
+				[cell setStringValue:(audioDevice.codecID != 0 ? [NSString stringWithFormat:@"%d", audioDevice.alcLayoutID] : @"-")];
 				break;
 			case 3:
 				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.subDeviceID]];
@@ -683,7 +680,7 @@
 				[cell setStringValue:(audioDevice.codecID != 0 ? [NSString stringWithFormat:@"0x%08X", audioDevice.codecID] : @"-")];
 				break;
 			case 6:
-				[cell setStringValue:[NSString stringWithFormat:@"0x%04X", audioDevice.codecRevisionID & 0xFFFF]];
+				[cell setStringValue:(audioDevice.codecID != 0 ? [NSString stringWithFormat:@"0x%04X", audioDevice.codecRevisionID & 0xFFFF] : @"-")];
 				break;
 			case 7:
 				[cell setStringValue:(audioDevice.codecID != 0 ? audioDevice.codecName : audioDevice.deviceName)];
