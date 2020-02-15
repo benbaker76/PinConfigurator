@@ -658,6 +658,7 @@
 	else if (outlineView == [self importIORegOutlineView])
 	{
 		AudioDevice *audioDevice = item;
+		NSString *deviceName = (audioDevice.codecID != 0 ? audioDevice.codecName : audioDevice.deviceName);
 		
 		switch ([[tableColumn identifier] intValue])
 		{
@@ -683,7 +684,7 @@
 				[cell setStringValue:(audioDevice.codecID != 0 ? [NSString stringWithFormat:@"0x%04X", audioDevice.codecRevisionID & 0xFFFF] : @"-")];
 				break;
 			case 7:
-				[cell setStringValue:(audioDevice.codecID != 0 ? audioDevice.codecName : audioDevice.deviceName)];
+				[cell setStringValue:(audioDevice.audioDeviceModelID != 0 ? audioDevice.audioDeviceName : deviceName)];
 				break;
 		}
 	}
