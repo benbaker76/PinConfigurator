@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "NSPinCell.h"
+#import "NSPinCellView.h"
 #import "NSString+Pin.h"
 #import "AudioNode.h"
 #import "AudioDevice.h"
@@ -76,9 +76,9 @@
 	}
 	
 	_nodeArray = [[NSMutableArray alloc] init];
-	NSPinCell *pinCell = [[[NSPinCell alloc] init] autorelease];
-	NSTableColumn *tableColumn = [_pinConfigOutlineView tableColumnWithIdentifier:@"1"];
-	[tableColumn setDataCell:pinCell];
+	//NSPinCellView *pinCellView = [[[NSPinCellView alloc] init] autorelease];
+	//NSTableColumn *tableColumn = [_pinConfigOutlineView tableColumnWithIdentifier:@"1"];
+	//[tableColumn setDataCell:pinCellView];
 	[_pinConfigOutlineView setDoubleAction:@selector(editNode:)];
 	[_pinConfigOutlineView setTarget:self];
 	[_portPopUpButton removeAllItems];
@@ -561,66 +561,70 @@
 	return 0;
 }
 
-- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item;
+- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
+	NSTableCellView *result = [outlineView makeViewWithIdentifier:tableColumn.identifier owner:self];
+	
 	if (outlineView == _pinConfigOutlineView)
 	{
 		NSString *nid = [tableColumn identifier];
 		
 		if ([nid intValue] == 1)
 		{
-			if (cell)
+			NSPinCellView *pinCellView = (NSPinCellView *)result;
+			
+			if (pinCellView)
 			{
 				if (item)
-					[cell setItem:item isSelected:NO];
+					[pinCellView setItem:item isSelected:NO];
 			}
 		}
 		else
 		{
 			AudioNode *audioNode = item;
-			[cell setFont:[NSFont systemFontOfSize:12]];
+			[result.textField setFont:[NSFont systemFontOfSize:12]];
 			
 			switch ([[tableColumn identifier] intValue])
 			{
 				case 2:
-					[cell setStringValue:audioNode.nodeString];
-					[cell setFont:[NSFont boldSystemFontOfSize:12]];
+					result.textField.stringValue = audioNode.nodeString;
+					[result.textField setFont:[NSFont boldSystemFontOfSize:12]];
 					break;
 				case 3:
-					[cell setStringValue:audioNode.pinDefaultString];
+					result.textField.stringValue = audioNode.pinDefaultString;
 					break;
 				case 4:
-					[cell setStringValue:audioNode.directionString];
+					result.textField.stringValue = audioNode.directionString;
 					break;
 				case 5:
-					[cell setStringValue:[NSString pinDefaultDevice:audioNode.device]];
+					result.textField.stringValue = [NSString pinDefaultDevice:audioNode.device];
 					break;
 				case 6:
-					[cell setStringValue:[NSString pinConnector:audioNode.connector]];
+					result.textField.stringValue = [NSString pinConnector:audioNode.connector];
 					break;
 				case 7:
-					[cell setStringValue:[NSString pinPort:audioNode.port]];
+					result.textField.stringValue = [NSString pinPort:audioNode.port];
 					break;
 				case 8:
-					[cell setStringValue:[NSString pinGrossLocation:audioNode.grossLocation]];
+					result.textField.stringValue = [NSString pinGrossLocation:audioNode.grossLocation];
 					break;
 				case 9:
-					[cell setStringValue:[NSString pinLocation:audioNode.grossLocation geometricLocation:audioNode.geometricLocation]];
+					result.textField.stringValue = [NSString pinLocation:audioNode.grossLocation geometricLocation:audioNode.geometricLocation];
 					break;
 				case 10:
-					[cell setStringValue:[NSString pinColor:[audioNode color]]];
+					result.textField.stringValue = [NSString pinColor:[audioNode color]];
 					break;
 				case 11:
-					[cell setIntValue:audioNode.group];
+					result.textField.intValue = audioNode.group;
 					break;
 				case 12:
-					[cell setIntValue:[audioNode index]];
+					result.textField.intValue = audioNode.index;
 					break;
 				case 13:
-					[cell setStringValue:audioNode.eapd & HDA_EAPD_BTL_ENABLE_EAPD ? [NSString stringWithFormat:@"0x%1X", audioNode.eapd] : @"-"];
+					result.textField.stringValue = (audioNode.eapd & HDA_EAPD_BTL_ENABLE_EAPD ? [NSString stringWithFormat:@"0x%1X", audioNode.eapd] : @"-");
 					break;
 				default:
-					return;
+					break;
 			}
 		}
 	}
@@ -631,26 +635,26 @@
 		switch ([[tableColumn identifier] intValue])
 		{
 			case 0:
-				[cell setIntValue:(int)[_hdaConfigDefaultArray indexOfObject:hdaConfigDictionary]];
+				result.textField.intValue = (int)[_hdaConfigDefaultArray indexOfObject:hdaConfigDictionary];
 				break;
 			case 1:
-				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", [[hdaConfigDictionary objectForKey:@"CodecID"] intValue]]];
+				result.textField.stringValue = [NSString stringWithFormat:@"0x%08X", [[hdaConfigDictionary objectForKey:@"CodecID"] intValue]];
 				break;
 			case 2:
-				[cell setIntValue:[[hdaConfigDictionary objectForKey:@"LayoutID"] intValue]];
+				result.textField.intValue = [[hdaConfigDictionary objectForKey:@"LayoutID"] intValue];
 				break;
 			case 3:
 			{
 				uint32_t codecID = [[hdaConfigDictionary objectForKey:@"CodecID"] intValue];
 				NSString *codecName;
 				[self getAudioCodecName:codecID revisionID:0 name:&codecName];
-				[cell setStringValue:codecName];
+				result.textField.stringValue = codecName;
 				break;
 			}
 			case 4:
 			{
 				NSString *codecName = [hdaConfigDictionary objectForKey:@"Codec"];
-				[cell setStringValue:codecName != nil ? codecName : @""];
+				result.textField.stringValue = (codecName != nil ? codecName : @"");
 				break;
 			}
 		}
@@ -663,31 +667,33 @@
 		switch ([[tableColumn identifier] intValue])
 		{
 			case 0:
-				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.deviceID]];
+				result.textField.stringValue = [NSString stringWithFormat:@"0x%08X", audioDevice.deviceID];
 				break;
 			case 1:
-				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.revisionID]];
+				result.textField.stringValue = [NSString stringWithFormat:@"0x%08X", audioDevice.revisionID];
 				break;
 			case 2:
-				[cell setStringValue:(audioDevice.codecID != 0 ? [NSString stringWithFormat:@"%d", audioDevice.alcLayoutID] : @"-")];
+				result.textField.stringValue = (audioDevice.codecID != 0 ? [NSString stringWithFormat:@"%d", audioDevice.alcLayoutID] : @"-");
 				break;
 			case 3:
-				[cell setStringValue:[NSString stringWithFormat:@"0x%08X", audioDevice.subDeviceID]];
+				result.textField.stringValue = [NSString stringWithFormat:@"0x%08X", audioDevice.subDeviceID];
 				break;
 			case 4:
-				[cell setStringValue:[NSString stringWithFormat:@"0x%X", audioDevice.codecAddress]];
+				result.textField.stringValue = [NSString stringWithFormat:@"0x%X", audioDevice.codecAddress];
 				break;
 			case 5:
-				[cell setStringValue:(audioDevice.codecID != 0 ? [NSString stringWithFormat:@"0x%08X", audioDevice.codecID] : @"-")];
+				result.textField.stringValue = (audioDevice.codecID != 0 ? [NSString stringWithFormat:@"0x%08X", audioDevice.codecID] : @"-");
 				break;
 			case 6:
-				[cell setStringValue:(audioDevice.codecID != 0 ? [NSString stringWithFormat:@"0x%04X", audioDevice.codecRevisionID & 0xFFFF] : @"-")];
+				result.textField.stringValue = (audioDevice.codecID != 0 ? [NSString stringWithFormat:@"0x%04X", audioDevice.codecRevisionID & 0xFFFF] : @"-");
 				break;
 			case 7:
-				[cell setStringValue:(deviceName != nil ? deviceName : @"???")];
+				result.textField.stringValue = (deviceName != nil ? deviceName : @"???");
 				break;
 		}
 	}
+	
+	return result;
 }
 
 - (void)outlineViewSelectionIsChanging:(NSNotification *)notification

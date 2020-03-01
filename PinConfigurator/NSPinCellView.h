@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "AudioNode.h"
 
-@interface NSPinCell : NSCell
+@interface NSPinCellView : NSTableCellView
 {
 }
 

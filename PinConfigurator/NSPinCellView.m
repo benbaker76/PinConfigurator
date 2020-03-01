@@ -6,9 +6,9 @@
 //  Copyright © 2018 Ben Baker. All rights reserved.
 //
 
-#import "NSPinCell.h"
+#import "NSPinCellView.h"
 
-@implementation NSPinCell
+@implementation NSPinCellView
 
 @synthesize item = _item;
 @synthesize isSelected = _isSelected;
@@ -34,14 +34,14 @@
 	_isSelected = isSelected;
 }
 
-- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView {
+- (void)drawRect:(NSRect)dirtyRect {
 	if (!_item)
 		return;
 	
 	[[NSGraphicsContext currentContext] saveGraphicsState];
 	
-	_isSelected = [self isHighlighted];
-	NSRect rect = NSMakeRect(cellFrame.origin.x + 3.0, cellFrame.origin.y + 3.0, 10, 10);
+	_isSelected = [self isSelected];
+	NSRect rect = NSMakeRect(dirtyRect.origin.x + 3.0, dirtyRect.origin.y + 3.0, 10, 10);
 	NSColor *jackColor = [_item jackColor];
 	[jackColor set];
 	

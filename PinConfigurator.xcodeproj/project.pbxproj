@@ -16,12 +16,12 @@
 		E25A0CFA22158DF600057B76 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = E25A0CF822158DF600057B76 /* Credits.rtf */; };
 		E28353B1220C835300454571 /* AudioNode.m in Sources */ = {isa = PBXBuildFile; fileRef = E28353B0220C835300454571 /* AudioNode.m */; };
 		E28353B5220C877D00454571 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E28353B4220C877D00454571 /* AppKit.framework */; };
-		E28353B8220C88C100454571 /* NSPinCell.m in Sources */ = {isa = PBXBuildFile; fileRef = E28353B7220C88C100454571 /* NSPinCell.m */; };
 		E28353BB220C9CDB00454571 /* NSString+Pin.m in Sources */ = {isa = PBXBuildFile; fileRef = E28353BA220C9CDB00454571 /* NSString+Pin.m */; };
 		E28353C1220CAB2100454571 /* NSColor+Pin.m in Sources */ = {isa = PBXBuildFile; fileRef = E28353C0220CAB2100454571 /* NSColor+Pin.m */; };
 		E28B558B22130052004FCE24 /* Audio in Resources */ = {isa = PBXBuildFile; fileRef = E28B558A22130052004FCE24 /* Audio */; };
 		E2AEBFD9220CE9780037EA73 /* MiscTools.m in Sources */ = {isa = PBXBuildFile; fileRef = E2AEBFD8220CE9780037EA73 /* MiscTools.m */; };
 		E2B22A73221870C5003FC976 /* HdaCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B22A72221870C5003FC976 /* HdaCodec.m */; };
+		E2B848E0240B30AD00CD051F /* NSPinCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B848DE240B30AD00CD051F /* NSPinCellView.m */; };
 		E2D61C6A22872E9D004A059A /* HdaCodecDump.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D61C6822872E9D004A059A /* HdaCodecDump.m */; };
 /* End PBXBuildFile section */
 
@@ -42,8 +42,6 @@
 		E28353B0220C835300454571 /* AudioNode.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = AudioNode.m; sourceTree = "<group>"; };
 		E28353B2220C836700454571 /* AudioNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioNode.h; sourceTree = "<group>"; };
 		E28353B4220C877D00454571 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		E28353B6220C88C100454571 /* NSPinCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSPinCell.h; sourceTree = "<group>"; };
-		E28353B7220C88C100454571 /* NSPinCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSPinCell.m; sourceTree = "<group>"; };
 		E28353B9220C9CDB00454571 /* NSString+Pin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+Pin.h"; sourceTree = "<group>"; };
 		E28353BA220C9CDB00454571 /* NSString+Pin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+Pin.m"; sourceTree = "<group>"; };
 		E28353BF220CAB2100454571 /* NSColor+Pin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSColor+Pin.h"; sourceTree = "<group>"; };
@@ -53,6 +51,8 @@
 		E2AEBFD8220CE9780037EA73 /* MiscTools.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = MiscTools.m; sourceTree = "<group>"; };
 		E2B22A72221870C5003FC976 /* HdaCodec.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = HdaCodec.m; sourceTree = "<group>"; };
 		E2B22A74221870D5003FC976 /* HdaCodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HdaCodec.h; sourceTree = "<group>"; };
+		E2B848DE240B30AD00CD051F /* NSPinCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSPinCellView.m; sourceTree = "<group>"; };
+		E2B848DF240B30AD00CD051F /* NSPinCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSPinCellView.h; sourceTree = "<group>"; };
 		E2D61C6822872E9D004A059A /* HdaCodecDump.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HdaCodecDump.m; sourceTree = "<group>"; };
 		E2D61C6922872E9D004A059A /* HdaCodecDump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HdaCodecDump.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -112,8 +112,8 @@
 				E2AEBFD8220CE9780037EA73 /* MiscTools.m */,
 				E28353BF220CAB2100454571 /* NSColor+Pin.h */,
 				E28353C0220CAB2100454571 /* NSColor+Pin.m */,
-				E28353B6220C88C100454571 /* NSPinCell.h */,
-				E28353B7220C88C100454571 /* NSPinCell.m */,
+				E2B848DF240B30AD00CD051F /* NSPinCellView.h */,
+				E2B848DE240B30AD00CD051F /* NSPinCellView.m */,
 				E28353B9220C9CDB00454571 /* NSString+Pin.h */,
 				E28353BA220C9CDB00454571 /* NSString+Pin.m */,
 			);
@@ -212,11 +212,11 @@
 				E2275923220C77FB00377EF5 /* main.m in Sources */,
 				E2D61C6A22872E9D004A059A /* HdaCodecDump.m in Sources */,
 				E2B22A73221870C5003FC976 /* HdaCodec.m in Sources */,
+				E2B848E0240B30AD00CD051F /* NSPinCellView.m in Sources */,
 				E227591B220C77FA00377EF5 /* AppDelegate.m in Sources */,
 				E2AEBFD9220CE9780037EA73 /* MiscTools.m in Sources */,
 				E24E3F7B221352ED0079D7DB /* AudioDevice.m in Sources */,
 				E28353BB220C9CDB00454571 /* NSString+Pin.m in Sources */,
-				E28353B8220C88C100454571 /* NSPinCell.m in Sources */,
 				E28353B1220C835300454571 /* AudioNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -364,7 +364,7 @@
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 0221;
+				CURRENT_PROJECT_VERSION = 0222;
 				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				INFOPLIST_FILE = PinConfigurator/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -372,7 +372,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				MARKETING_VERSION = 2.2.1;
+				MARKETING_VERSION = 2.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Headsoft.PinConfigurator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -388,7 +388,7 @@
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 0221;
+				CURRENT_PROJECT_VERSION = 0222;
 				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				INFOPLIST_FILE = PinConfigurator/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -396,7 +396,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				MARKETING_VERSION = 2.2.1;
+				MARKETING_VERSION = 2.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.Headsoft.PinConfigurator;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
