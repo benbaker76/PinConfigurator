@@ -9,8 +9,6 @@
 #import "AudioNode.h"
 #import "NSString+Pin.h"
 #import "NSColor+Pin.h"
-#import "HdaVerbs.h"
-#import "HdaCodec.h"
 #import <AppKit/AppKit.h>
 
 @implementation AudioNode
@@ -250,14 +248,7 @@
 
 - (NSString *)directionString
 {
-	NSString *pinDirection = @"--";
-	
-	if ([self isOut])
-		pinDirection = @"Out";
-	else if ([self isIn])
-		pinDirection = @"In";
-	
-	return pinDirection;
+	return [NSString pinDirection:_device];
 }
 
 @end

@@ -7,8 +7,12 @@
 //
 
 #import "NSString+Pin.h"
+#import "AudioNode.h"
 
 @implementation NSString (Pin)
+
+#define GetLocalizedString(key) \
+[[NSBundle mainBundle] localizedStringForKey:(key) value:@"" table:nil]
 
 const char *gPinColorArray[] = { "Unknown", "Black", "Gray", "Blue", "Green", "Red", "Orange", "Yellow", "Purple", "Pink", "Reserved1", "Unknown", "Unknown", "Reserved2", "White", "Other" };
 const char *gPinMisc[] = { "Jack Detect Override", "Reserved", "Reserved", "Reserved" };
@@ -22,51 +26,63 @@ const char *gPinGrossSpecial8[] = { "Drive Bay", "Digital Display", "Special", "
 const char *gPinGrossSpecial9[] = { "Special", "ATAPI", "Special", "Special" };
 const char *gPinEAPD[] = { "BTL", "EAPD", "L/R Swap" };
 
++ (NSString *)pinDirection:(uint8_t)value;
+{
+	NSString *pinDirection = @"--";
+	
+	if (value <= kHdaConfigDefaultDeviceModemHandset)
+		pinDirection = GetLocalizedString(@"Out");
+	else if (value > kHdaConfigDefaultDeviceModemHandset && value <= kHdaConfigDefaultDeviceOtherDigitalIn)
+		pinDirection = GetLocalizedString(@"In");
+	
+	return pinDirection;
+}
+
 + (NSString *)pinColor:(uint8_t)value
 {
-	return [NSString stringWithUTF8String:gPinColorArray[value & 0xF]];
+	return GetLocalizedString([NSString stringWithUTF8String:gPinColorArray[value & 0xF]]);
 }
 
 + (NSString *)pinMisc:(uint8_t)value
 {
-	return [NSString stringWithUTF8String:gPinMisc[value & 0x3]];
+	return GetLocalizedString([NSString stringWithUTF8String:gPinMisc[value & 0x3]]);
 }
 
 + (NSString *)pinDefaultDevice:(uint8_t)value
 {
-	return [NSString stringWithUTF8String:gPinDefaultDeviceArray[value & 0xF]];
+	return GetLocalizedString([NSString stringWithUTF8String:gPinDefaultDeviceArray[value & 0xF]]);
 }
 
 + (NSString *)pinConnector:(uint8_t)value
 {
-	return [NSString stringWithUTF8String:gPinConnector[value & 0xF]];
+	return GetLocalizedString([NSString stringWithUTF8String:gPinConnector[value & 0xF]]);
 }
 
 + (NSString *)pinPort:(uint8_t)value
 {
-	return [NSString stringWithUTF8String:gPinPort[value & 0x3]];
+	return GetLocalizedString([NSString stringWithUTF8String:gPinPort[value & 0x3]]);
 }
 
 + (NSString *)pinGrossLocation:(uint8_t)value;
 {
-	return [NSString stringWithUTF8String:gPinGrossLocation[value]];
+	return GetLocalizedString([NSString stringWithUTF8String:gPinGrossLocation[value]]);
 }
 
 + (NSString *)pinLocation:(uint8_t)grossLocation geometricLocation:(uint8_t)geometricLocation;
 {
 	if (geometricLocation == 0x7)
-		return [NSString stringWithUTF8String:gPinGrossSpecial7[grossLocation]];
+		return GetLocalizedString([NSString stringWithUTF8String:gPinGrossSpecial7[grossLocation]]);
 	else if (geometricLocation == 0x8)
-		return [NSString stringWithUTF8String:gPinGrossSpecial8[grossLocation]];
+		return GetLocalizedString([NSString stringWithUTF8String:gPinGrossSpecial8[grossLocation]]);
 	else if (geometricLocation == 0x9)
-		return [NSString stringWithUTF8String:gPinGrossSpecial9[grossLocation]];
+		return GetLocalizedString([NSString stringWithUTF8String:gPinGrossSpecial9[grossLocation]]);
 
-	return [NSString stringWithUTF8String:gPinGeometricLocation[geometricLocation]];
+	return GetLocalizedString([NSString stringWithUTF8String:gPinGeometricLocation[geometricLocation]]);
 }
 
 + (NSString *)pinEAPD:(uint8_t)value;
 {
-	return [NSString stringWithUTF8String:gPinEAPD[value & 0x7]];
+	return GetLocalizedString([NSString stringWithUTF8String:gPinEAPD[value & 0x7]]);
 }
 
 + (NSString *)pinConfigDescription:(uint8_t *)value
