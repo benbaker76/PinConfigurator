@@ -105,7 +105,7 @@
 - (NSMutableString *)codecString;
 + (bool)getHdaCodecArray_Linux:(NSString *)hdaCodecString hdaCodecArray:(NSMutableArray **)hdaCodecArray;
 + (bool)parseHdaCodecString_Linux:(NSString *)hdaCodecString index:(uint32_t)index hdaCodec:(HdaCodec *)hdaCodec;
-+ (int)parseHdaCodecString:(NSString *)hdaCodecString index:(uint32_t)index hdaCodec:(HdaCodec **)hdaCodec hdaCodecArray:(NSMutableArray **)hdaCodecArray;
++ (uint32_t)parseHdaCodecString:(NSString *)hdaCodecString index:(uint32_t)index hdaCodec:(HdaCodec **)hdaCodec hdaCodecArray:(NSMutableArray **)hdaCodecArray;
 + (bool)parseHdaCodecData:(uint8_t *)hdaCodecData length:(uint32_t)length hdaCodec:(HdaCodec **)hdaCodec;
 + (bool)getWidget:(NSArray *)widgets nodeID:(uint8_t)nodeID hdaWidget:(HdaWidget **)hdaWidget;
 + (void)createPlatformsXml:(HdaCodec *)hdaCodec;

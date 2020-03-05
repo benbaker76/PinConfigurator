@@ -835,6 +835,20 @@
 	return ((port << 30) | (location << 24) | (device << 20) | (connector << 16) | (color << 12) | (misc << 8) | (group << 4) | index);
 }
 
+- (void)showSelectCodec:(NSString *)configString
+{
+	[_hdaCodecString release];
+	
+	_hdaCodecString = [configString retain];
+	
+	[_selectCodecOutlineView reloadData];
+	
+	NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:0];
+	[[self selectCodecOutlineView] selectRowIndexes:indexSet byExtendingSelection:NO];
+	
+	[NSApp beginSheet:_selectCodecPanel modalForWindow:[self mainWindow] modalDelegate:0 didEndSelector:0 contextInfo:0];
+}
+
 - (void)parseCodec:(HdaCodec *)hdaCodec
 {
 	_nodeArray = [[NSMutableArray alloc] init];
@@ -867,19 +881,14 @@
 
 - (void)parseConfigString:(NSString *)configString
 {
-	int result = 0;
+	int codecCount = 0;
 	
 	[self clear];
 	
-	if ((result = [HdaCodec parseHdaCodecString:configString index:0 hdaCodec:&_hdaCodec hdaCodecArray:&_selectCodecArray]))
+	if ((codecCount = [HdaCodec parseHdaCodecString:configString index:0 hdaCodec:&_hdaCodec hdaCodecArray:&_selectCodecArray]))
 	{
-		if (result == 2)
-		{
-			[_hdaCodecString release];
-			_hdaCodecString = [configString retain];
-			[_selectCodecOutlineView reloadData];
-			[NSApp beginSheet:_selectCodecPanel modalForWindow:[self mainWindow] modalDelegate:0 didEndSelector:0 contextInfo:0];
-		}
+		if (codecCount > 1)
+			[self showSelectCodec:configString];
 		else
 			[self parseCodec:_hdaCodec];
 	}

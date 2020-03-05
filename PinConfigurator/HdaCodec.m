@@ -1082,7 +1082,7 @@
 	return true;
 }
 
-+ (int)parseHdaCodecString:(NSString *)hdaCodecString index:(uint32_t)index hdaCodec:(HdaCodec **)hdaCodec hdaCodecArray:(NSMutableArray **)hdaCodecArray
++ (uint32_t)parseHdaCodecString:(NSString *)hdaCodecString index:(uint32_t)index hdaCodec:(HdaCodec **)hdaCodec hdaCodecArray:(NSMutableArray **)hdaCodecArray
 {
 	*hdaCodec = [[HdaCodec alloc] init];
 	
@@ -1096,7 +1096,7 @@
 		[HdaCodec getHdaCodecArray_Linux:hdaCodecString hdaCodecArray:hdaCodecArray];
 		
 		if ([*hdaCodecArray count] > 1)
-			return 2;
+			return (uint32_t)[*hdaCodecArray count];
 		
 		return [HdaCodec parseHdaCodecString_Linux:hdaCodecString index:index hdaCodec:*hdaCodec];
 	}
