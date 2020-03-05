@@ -21,6 +21,7 @@ The original [Pin Configurator](https://www.applelife.ru/threads/pin-configurato
 - Create default node for "Headphone Mic Boost Volume" (insanelyDeepak)
 - Added Import / Export PinConfigs.kext
 - Added Import IORegistry pin configuration
+- Added Import [HdaCodecDump.efi](https://github.com/acidanthera/OpenCorePkg/tree/master/Application/HdaCodecDump) format
 - Added Export verbs.txt
 - Added Export HdaCodec.txt (Linux-style codec dump format)
 - Can open Clover r4887+ audio codec dumps (press F8 from Clover menu to dump to EFI/CLOVER/misc folder)
