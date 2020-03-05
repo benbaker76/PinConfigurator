@@ -111,8 +111,19 @@ uint32_t getInt(NSString *valueString)
 {
 	uint32_t value;
 	
-	NSScanner *scanner = [NSScanner scannerWithString:valueString];
-	[scanner scanInt:(int *)&value];
+	NSCharacterSet *whitespaceCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@" "];
+	valueString = [valueString stringByTrimmingCharactersInSet:whitespaceCharacterSet];
+	
+	if ([valueString hasPrefix:@"0x"])
+	{
+		NSScanner *scanner = [NSScanner scannerWithString:valueString];
+		[scanner scanHexInt:&value];
+	}
+	else
+	{
+		NSScanner *scanner = [NSScanner scannerWithString:valueString];
+		[scanner scanInt:(int *)&value];
+	}
 	
 	return value;
 }

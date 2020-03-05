@@ -926,6 +926,7 @@
 	[self clear];
 	
 	_fileName = [filename retain];
+	NSStringEncoding stringEncoding;
 	NSData *configData = [NSData dataWithContentsOfFile:filename];
 	
 	if ([[filename lastPathComponent] caseInsensitiveCompare:@"PinConfigs.kext"] == NSOrderedSame)
@@ -945,9 +946,10 @@
 		return YES;
 	}
 	
-	NSString *configString = [[NSString alloc] initWithData:configData encoding:NSUTF8StringEncoding];
+	NSError *error;
+	NSString *configString = [NSString stringWithContentsOfFile:filename usedEncoding:&stringEncoding error:&error];
+
 	[self parseConfigString:configString];
-	[configString release];
 	
 	return YES;
 }

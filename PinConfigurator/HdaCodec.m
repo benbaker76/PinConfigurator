@@ -573,38 +573,38 @@
 		// =============================================================================
 		//  Widget cap: 0x0040018f
 		// =============================================================================
-		if (getRegExArray(@"(.*)Widget cap: 0x(.*)", line, 2, &itemArray))
-			hdaWidget.capabilities = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)Widget cap: (.*)", line, 2, &itemArray))
+			hdaWidget.capabilities = getInt(itemArray[1]);
 		
 		// =============================================================================
 		//  EAPD: 0x00000002
 		// =============================================================================
-		if (getRegExArray(@"(.*)EAPD: 0x(.*)", line, 2, &itemArray))
-			hdaWidget.defaultEapd = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)EAPD: (.*)", line, 2, &itemArray))
+			hdaWidget.defaultEapd = getInt(itemArray[1]);
 		
 		// =============================================================================
 		// 	Pin cap: 0x00010014
 		// =============================================================================
-		if (getRegExArray(@"(.*)Pin cap: 0x(.*)", line, 2, &itemArray))
-			hdaWidget.pinCapabilities = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)Pin cap: (.*)", line, 2, &itemArray))
+			hdaWidget.pinCapabilities = getInt(itemArray[1]);
 		
 		// =============================================================================
 		// 	Pin config: 0x99130110
 		// =============================================================================
-		if (getRegExArray(@"(.*)Pin config: 0x(.*)", line, 2, &itemArray))
-			hdaWidget.defaultConfiguration = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)Pin config: (.*)", line, 2, &itemArray))
+			hdaWidget.defaultConfiguration = getInt(itemArray[1]);
 		
 		// =============================================================================
 		// 	Pin control: 0x00000000
 		// =============================================================================
-		if (getRegExArray(@"(.*)Pin control: 0x(.*)", line, 2, &itemArray))
-			hdaWidget.defaultPinControl = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)Pin control: (.*)", line, 2, &itemArray))
+			hdaWidget.defaultPinControl = getInt(itemArray[1]);
 		
 		// =============================================================================
 		// 	Output amp: 0x80000000
 		// =============================================================================
-		if (getRegExArray(@"(.*)Output amp: 0x(.*)", line, 2, &itemArray))
-			hdaWidget.ampOutCapabilities = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)Output amp: (.*)", line, 2, &itemArray))
+			hdaWidget.ampOutCapabilities = getInt(itemArray[1]);
 		
 		// =============================================================================
 		// 	Output val: [0x80 0x80]
@@ -620,10 +620,10 @@
 				
 				if ([stereoArray count] > 0)
 				{
-					hdaWidget.ampOutLeftDefaultGainMute = getHexInt(stereoArray[0]);
+					hdaWidget.ampOutLeftDefaultGainMute = getInt(stereoArray[0]);
 					
 					if ([stereoArray count] == 2)
-						hdaWidget.ampOutRightDefaultGainMute = getHexInt(stereoArray[1]);
+						hdaWidget.ampOutRightDefaultGainMute = getInt(stereoArray[1]);
 				}
 				
 				break;
@@ -635,8 +635,8 @@
 		// =============================================================================
 		// 	Input amp: 0x002f0300
 		// =============================================================================
-		if (getRegExArray(@"(.*)Input amp: 0x(.*)", line, 2, &itemArray))
-			hdaWidget.ampInCapabilities = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)Input amp: (.*)", line, 2, &itemArray))
+			hdaWidget.ampInCapabilities = getInt(itemArray[1]);
 		
 		// =============================================================================
 		// 	Input val: [0x00 0x00] [0x00 0x00]
@@ -654,10 +654,10 @@
 				
 				if ([stereoArray count] > 0)
 				{
-					[hdaWidget.ampInLeftDefaultGainMute addObject:[NSNumber numberWithInteger:getHexInt(stereoArray[0])]];
+					[hdaWidget.ampInLeftDefaultGainMute addObject:[NSNumber numberWithInteger:getInt(stereoArray[0])]];
 					
 					if ([stereoArray count] == 2)
-						[hdaWidget.ampInRightDefaultGainMute addObject:[NSNumber numberWithInteger:getHexInt(stereoArray[1])]];
+						[hdaWidget.ampInRightDefaultGainMute addObject:[NSNumber numberWithInteger:getInt(stereoArray[1])]];
 				}
 			}
 			
@@ -744,14 +744,14 @@
 		// =============================================================================
 		//  HDA Codec ID: 0x10ec0269
 		// =============================================================================
-		if (getRegExArray(@"(.*)HDA Codec ID: 0x(.*)", line, 2, &itemArray))
-			hdaCodec.vendorID = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)HDA Codec ID: (.*)", line, 2, &itemArray))
+			hdaCodec.vendorID = getInt(itemArray[1]);
 		
 		// =============================================================================
 		// Revision: 0x01
 		// =============================================================================
-		if (getRegExArray(@"(.*)Revision: 0x(.*)", line, 2, &itemArray))
-			hdaCodec.revisionID |= getHexInt(itemArray[1]) << 16;
+		if (getRegExArray(@"(.*)Revision: (.*)", line, 2, &itemArray))
+			hdaCodec.revisionID |= getInt(itemArray[1]) << 16;
 	}
 	
 	hdaCodec.widgets = [NSMutableArray array];
@@ -798,15 +798,15 @@
 		// =============================================================================
 		// Node 0x14 [Pin Complex] wcaps 0x40058d: Stereo Amp-Out
 		// =============================================================================
-		if (getRegExArray(@"Node 0x(.*) \\[(.*)\\] wcaps 0x(.*):(.*)", line, 4, &itemArray))
+		if (getRegExArray(@"Node (.*) \\[(.*)\\] wcaps (.*):(.*)", line, 4, &itemArray))
 		{
 			if (hdaWidget != nil)
 				[hdaWidget release];
 			
-			hdaWidget = [[HdaWidget alloc] initWithNodeID:getHexInt(itemArray[0])];
+			hdaWidget = [[HdaWidget alloc] initWithNodeID:getInt(itemArray[0])];
 			[hdaCodec.widgets addObject:hdaWidget];
 			
-			hdaWidget.capabilities = getHexInt(itemArray[2]);
+			hdaWidget.capabilities = getInt(itemArray[2]);
 		}
 		
 		// =============================================================================
@@ -818,13 +818,13 @@
 		// =============================================================================
 		//	Amp-In caps: ofs=0x00, nsteps=0x00, stepsize=0x00, mute=1
 		// =============================================================================
-		if (getRegExArray(@"(.*)Amp-In caps: ofs=0x(.*), nsteps=0x(.*), stepsize=0x(.*), mute=(.*)", line, 5, &itemArray))
+		if (getRegExArray(@"(.*)Amp-In caps: ofs=(.*), nsteps=(.*), stepsize=(.*), mute=(.*)", line, 5, &itemArray))
 		{
-			hdaWidget.ampInCapabilities |= getHexInt(itemArray[1]);
-			hdaWidget.ampInCapabilities |= getHexInt(itemArray[2]) << 8;
-			hdaWidget.ampInCapabilities |= getHexInt(itemArray[3]) << 16;
-			hdaWidget.ampInCapabilities |= getHexInt(itemArray[4]) ? HDA_PARAMETER_AMP_CAPS_MUTE : 0;
-		}
+			hdaWidget.ampInCapabilities |= getInt(itemArray[1]);
+			hdaWidget.ampInCapabilities |= getInt(itemArray[2]) << 8;
+			hdaWidget.ampInCapabilities |= getInt(itemArray[3]) << 16;
+			hdaWidget.ampInCapabilities |= getInt(itemArray[4]) ? HDA_PARAMETER_AMP_CAPS_MUTE : 0;
+		}			
 		
 		// =============================================================================
 		//  Amp-In vals:  [0x00 0x00]
@@ -842,10 +842,10 @@
 				
 				if ([stereoArray count] > 0)
 				{
-					[hdaWidget.ampInLeftDefaultGainMute addObject:[NSNumber numberWithInteger:getHexInt(stereoArray[0])]];
+					[hdaWidget.ampInLeftDefaultGainMute addObject:[NSNumber numberWithInteger:getInt(stereoArray[0])]];
 					
 					if ([stereoArray count] == 2)
-						[hdaWidget.ampInRightDefaultGainMute addObject:[NSNumber numberWithInteger:getHexInt(stereoArray[1])]];
+						[hdaWidget.ampInRightDefaultGainMute addObject:[NSNumber numberWithInteger:getInt(stereoArray[1])]];
 				}
 			}
 			
@@ -855,12 +855,12 @@
 		// =============================================================================
 		//	Amp-Out caps: ofs=0x00, nsteps=0x00, stepsize=0x00, mute=1
 		// =============================================================================
-		if (getRegExArray(@"(.*)Amp-Out caps: ofs=0x(.*), nsteps=0x(.*), stepsize=0x(.*), mute=(.*)", line, 5, &itemArray))
+		if (getRegExArray(@"(.*)Amp-Out caps: ofs=(.*), nsteps=(.*), stepsize=(.*), mute=(.*)", line, 5, &itemArray))
 		{
-			hdaWidget.ampOutCapabilities |= getHexInt(itemArray[1]);
-			hdaWidget.ampOutCapabilities |= getHexInt(itemArray[2]) << 8;
-			hdaWidget.ampOutCapabilities |= getHexInt(itemArray[3]) << 16;
-			hdaWidget.ampOutCapabilities |= getHexInt(itemArray[4]) ? HDA_PARAMETER_AMP_CAPS_MUTE : 0;
+			hdaWidget.ampOutCapabilities |= getInt(itemArray[1]);
+			hdaWidget.ampOutCapabilities |= getInt(itemArray[2]) << 8;
+			hdaWidget.ampOutCapabilities |= getInt(itemArray[3]) << 16;
+			hdaWidget.ampOutCapabilities |= getInt(itemArray[4]) ? HDA_PARAMETER_AMP_CAPS_MUTE : 0;
 		}
 		
 		// =============================================================================
@@ -877,10 +877,10 @@
 				
 				if ([stereoArray count] > 0)
 				{
-					hdaWidget.ampOutLeftDefaultGainMute = getHexInt(stereoArray[0]);
+					hdaWidget.ampOutLeftDefaultGainMute = getInt(stereoArray[0]);
 					
 					if ([stereoArray count] == 2)
-						hdaWidget.ampOutRightDefaultGainMute = getHexInt(stereoArray[1]);
+						hdaWidget.ampOutRightDefaultGainMute = getInt(stereoArray[1]);
 				}
 				
 				break;
@@ -906,7 +906,7 @@
 			for (int j = 0; j < [connectionArray count]; j++)
 			{
 				bool selected = [connectionArray[j] hasSuffix:@"*"];
-				uint32_t connection = getHexInt(connectionArray[j]);
+				uint32_t connection = getInt(connectionArray[j]);
 				[hdaWidget.connections addObject:[NSNumber numberWithInteger:connection]];
 				
 				if (selected)
@@ -921,26 +921,26 @@
 		// =============================================================================
 		// 	Pincap 0x00010014: OUT EAPD Detect
 		// =============================================================================
-		if (getRegExArray(@"(.*)Pincap 0x(.*):(.*)", line, 3, &itemArray))
-			hdaWidget.pinCapabilities = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)Pincap (.*):(.*)", line, 3, &itemArray))
+			hdaWidget.pinCapabilities = getInt(itemArray[1]);
 		
 		// =============================================================================
 		// 	EAPD 0x2: EAPD
 		// =============================================================================
-		if (getRegExArray(@"(.*)EAPD 0x(.*):(.*)", line, 3, &itemArray))
-			hdaWidget.defaultEapd = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)EAPD (.*):(.*)", line, 3, &itemArray))
+			hdaWidget.defaultEapd = getInt(itemArray[1]);
 		
 		// =============================================================================
 		// 	Pin Default 0x90170110: [Fixed] Speaker at Int N/A
 		// =============================================================================
-		if (getRegExArray(@"(.*)Pin Default 0x(.*):(.*)", line, 3, &itemArray))
-			hdaWidget.defaultConfiguration = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)Pin Default (.*):(.*)", line, 3, &itemArray))
+			hdaWidget.defaultConfiguration = getInt(itemArray[1]);
 		
 		// =============================================================================
 		// 	Pin-ctls: 0x40: OUT
 		// =============================================================================
-		if (getRegExArray(@"(.*)Pin-ctls: 0x(.*):(.*)", line, 3, &itemArray))
-			hdaWidget.defaultPinControl = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)Pin-ctls: (.*):(.*)", line, 3, &itemArray))
+			hdaWidget.defaultPinControl = getInt(itemArray[1]);
 	}
 	
 	if (hdaWidget != nil)
@@ -964,6 +964,7 @@
 	
 	NSString *headerString = [hdaCodecString substringWithRange:NSMakeRange(0, nodeRange.location)];
 	NSString *allNodesString = [hdaCodecString substringFromIndex:nodeRange.location];
+	allNodesString = [allNodesString stringByReplacingOccurrencesOfString:@"\r" withString:@""];
 	NSArray *nodeArray = [allNodesString componentsSeparatedByString:@"Node"];
 	NSArray *headerLineArray = [headerString componentsSeparatedByString:@"\n"];
 	NSMutableArray *itemArray;
@@ -986,20 +987,20 @@
 		// Vendor Id: 0x10EC0283
 		// =============================================================================
 		if (getRegExArray(@"Vendor Id: (.*)", line, 1, &itemArray))
-			hdaCodec.vendorID = getHexInt(itemArray[0]);
+			hdaCodec.vendorID = getInt(itemArray[0]);
 		
 		// =============================================================================
 		// Revision Id: 0x00100003
 		// =============================================================================
 		if (getRegExArray(@"Revision Id: (.*)", line, 1, &itemArray))
-			hdaCodec.revisionID = getHexInt(itemArray[0]);
+			hdaCodec.revisionID = getInt(itemArray[0]);
 		
 		// =============================================================================
 		// AFG Function Id: 0x1 (unsol 1)
 		// =============================================================================
-		if (getRegExArray(@"AFG Function Id: 0x(.*) \\(unsol (.*)\\)", line, 2, &itemArray))
+		if (getRegExArray(@"AFG Function Id: (.*) \\(unsol (.*)\\)", line, 2, &itemArray))
 		{
-			hdaCodec.audioFuncID = getHexInt(itemArray[0]);
+			hdaCodec.audioFuncID = getInt(itemArray[0]);
 			hdaCodec.unsol = getInt(itemArray[1]);
 		}
 		
@@ -1008,20 +1009,23 @@
 		// bits [0x000E]: 16 20 24
 		// formats [0x00000001]: PCM
 		// =============================================================================
-		if (getRegExArray(@"(.*)rates \\[0x(.*)\\]:(.*)", line, 3, &itemArray))
-			hdaCodec.rates = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)rates \\[(.*)\\]:(.*)", line, 3, &itemArray))
+			hdaCodec.rates = getInt(itemArray[1]);
 		
-		if (getRegExArray(@"(.*)bits \\[0x(.*)\\]:(.*)", line, 3, &itemArray))
-			hdaCodec.rates |= getHexInt(itemArray[1]) << 16;
+		if (getRegExArray(@"(.*)bits \\[(.*)\\]:(.*)", line, 3, &itemArray))
+			hdaCodec.rates |= getInt(itemArray[1]) << 16;
 		
-		if (getRegExArray(@"(.*)formats \\[0x(.*)\\]:(.*)", line, 3, &itemArray))
-			hdaCodec.formats = getHexInt(itemArray[1]);
+		if (getRegExArray(@"(.*)formats \\(.*)\\]:(.*)", line, 3, &itemArray))
+			hdaCodec.formats = getInt(itemArray[1]);
 	}
 	
 	hdaCodec.widgets = [NSMutableArray array];
 	
 	for (NSString *nodeString in nodeArray)
 	{
+		if ([nodeString isEqualToString:@""])
+			continue;
+		
 		NSString *newNodeString = [@"Node" stringByAppendingString:nodeString];
 		
 		[HdaCodec parseHdaCodecNode_Linux:newNodeString hdaCodec:hdaCodec];
