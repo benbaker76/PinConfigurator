@@ -49,6 +49,9 @@ enum
 	NSArray *_codecsArray;
 	NSMutableArray *_codecIDArray;
 	
+	NSString *_hdaCodecString;
+	NSMutableArray *_selectCodecArray;
+	
 	bool _sortNodes;
 	uint32_t _nodeOptions;
 }
@@ -74,10 +77,12 @@ enum
 @property (assign) IBOutlet NSOutlineView *pinConfigOutlineView;
 @property (assign) IBOutlet NSOutlineView *importPinOutlineView;
 @property (assign) IBOutlet NSOutlineView *importIORegOutlineView;
+@property (assign) IBOutlet NSOutlineView *selectCodecOutlineView;
 @property (assign) IBOutlet NSTextField *addNodeTextField;
 @property (assign) IBOutlet NSPanel *addNodePanel;
 @property (assign) IBOutlet NSPanel *importPinConfigPanel;
 @property (assign) IBOutlet NSPanel *importIORegPanel;
+@property (assign) IBOutlet NSPanel *selectCodecPanel;
 @property (assign) IBOutlet NSSegmentedControl *editNodeSegmentedControl;
 @property (assign) IBOutlet NSTextField *layoutIDTextField;
 @property (assign) IBOutlet NSMenu *optionsMenu;
@@ -105,6 +110,8 @@ enum
 - (IBAction)importPinCancel:(id)sender;
 - (IBAction)importIORegSelect:(id)sender;
 - (IBAction)importIORegCancel:(id)sender;
+- (IBAction)selectCodecCancel:(id)sender;
+- (IBAction)selectCodecSelect:(id)sender;
 - (IBAction)layoutIDAction:(id)sender;
 - (IBAction)removeDisabledAction:(id)sender;
 - (IBAction)verbSanitizeAction:(id)sender;

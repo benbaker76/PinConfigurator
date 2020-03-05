@@ -949,7 +949,7 @@
 	return true;
 }
 
-+ (bool)parseHdaCodecString_Linux:(NSString *)hdaCodecString hdaCodec:(HdaCodec *)hdaCodec
++ (bool)parseHdaCodecHeader_Linux:(NSString *)headerString hdaCodec:(HdaCodec *)hdaCodec
 {
 	// Codec: Realtek Generic
 	// Address: 0
@@ -957,48 +957,39 @@
 	// Vendor Id: 0x10ec1220
 	//
 	
-	NSRange nodeRange = [hdaCodecString rangeOfString:@"Node"];
-	
-	if (nodeRange.location == NSNotFound)
-		return false;
-	
-	NSString *headerString = [hdaCodecString substringWithRange:NSMakeRange(0, nodeRange.location)];
-	NSString *allNodesString = [hdaCodecString substringFromIndex:nodeRange.location];
-	allNodesString = [allNodesString stringByReplacingOccurrencesOfString:@"\r" withString:@""];
-	NSArray *nodeArray = [allNodesString componentsSeparatedByString:@"Node"];
 	NSArray *headerLineArray = [headerString componentsSeparatedByString:@"\n"];
 	NSMutableArray *itemArray;
 	
-	for (NSString *line in headerLineArray)
+	for (NSString *headerLine in headerLineArray)
 	{
 		// =============================================================================
 		// Codec: Realtek Generic
 		// =============================================================================
-		if (getRegExArray(@"Codec: (.*)", line, 1, &itemArray))
+		if (getRegExArray(@"Codec: (.*)", headerLine, 1, &itemArray))
 			hdaCodec.name = itemArray[0];
 		
 		// =============================================================================
 		// Address: 0
 		// =============================================================================
-		if (getRegExArray(@"Address: (.*)", line, 1, &itemArray))
+		if (getRegExArray(@"Address: (.*)", headerLine, 1, &itemArray))
 			hdaCodec.address = getInt(itemArray[0]);
 		
 		// =============================================================================
 		// Vendor Id: 0x10EC0283
 		// =============================================================================
-		if (getRegExArray(@"Vendor Id: (.*)", line, 1, &itemArray))
+		if (getRegExArray(@"Vendor Id: (.*)", headerLine, 1, &itemArray))
 			hdaCodec.vendorID = getInt(itemArray[0]);
 		
 		// =============================================================================
 		// Revision Id: 0x00100003
 		// =============================================================================
-		if (getRegExArray(@"Revision Id: (.*)", line, 1, &itemArray))
+		if (getRegExArray(@"Revision Id: (.*)", headerLine, 1, &itemArray))
 			hdaCodec.revisionID = getInt(itemArray[0]);
 		
 		// =============================================================================
 		// AFG Function Id: 0x1 (unsol 1)
 		// =============================================================================
-		if (getRegExArray(@"AFG Function Id: (.*) \\(unsol (.*)\\)", line, 2, &itemArray))
+		if (getRegExArray(@"AFG Function Id: (.*) \\(unsol (.*)\\)", headerLine, 2, &itemArray))
 		{
 			hdaCodec.audioFuncID = getInt(itemArray[0]);
 			hdaCodec.unsol = getInt(itemArray[1]);
@@ -1009,15 +1000,72 @@
 		// bits [0x000E]: 16 20 24
 		// formats [0x00000001]: PCM
 		// =============================================================================
-		if (getRegExArray(@"(.*)rates \\[(.*)\\]:(.*)", line, 3, &itemArray))
+		if (getRegExArray(@"(.*)rates \\[(.*)\\]:(.*)", headerLine, 3, &itemArray))
 			hdaCodec.rates = getInt(itemArray[1]);
 		
-		if (getRegExArray(@"(.*)bits \\[(.*)\\]:(.*)", line, 3, &itemArray))
+		if (getRegExArray(@"(.*)bits \\[(.*)\\]:(.*)", headerLine, 3, &itemArray))
 			hdaCodec.rates |= getInt(itemArray[1]) << 16;
 		
-		if (getRegExArray(@"(.*)formats \\(.*)\\]:(.*)", line, 3, &itemArray))
+		if (getRegExArray(@"(.*)formats \\(.*)\\]:(.*)", headerLine, 3, &itemArray))
 			hdaCodec.formats = getInt(itemArray[1]);
 	}
+	
+	return true;
+}
+
++ (bool)getHdaCodecArray_Linux:(NSString *)hdaCodecString hdaCodecArray:(NSMutableArray **)hdaCodecArray
+{
+	[*hdaCodecArray removeAllObjects];
+	hdaCodecString = [hdaCodecString stringByReplacingOccurrencesOfString:@"\r" withString:@""];
+	
+	NSArray *codecArray = [hdaCodecString componentsSeparatedByString:@"Codec:"];
+	uint32_t codecCount = (uint32_t)[codecArray count] - 1;
+	
+	for (int i = 0; i < codecCount; i++)
+	{
+		hdaCodecString = codecArray[i + 1];
+		
+		NSRange nodeRange = [hdaCodecString rangeOfString:@"Node"];
+		
+		if (nodeRange.location == NSNotFound)
+			continue;
+		
+		NSString *headerString = [hdaCodecString substringWithRange:NSMakeRange(0, nodeRange.location)];
+		headerString = [@"Codec:" stringByAppendingString:headerString];
+		HdaCodec *hdaCodec = [[HdaCodec alloc] init];
+		
+		[HdaCodec parseHdaCodecHeader_Linux:headerString hdaCodec:hdaCodec];
+		
+		//NSLog(@"Codec: %@ Address: 0x%02X Vendor Id: 0x%08X Revision Id: 0x%08X", hdaCodec.name, hdaCodec.address, hdaCodec.vendorID, hdaCodec.revisionID);
+		
+		[*hdaCodecArray addObject:hdaCodec];
+	}
+	
+	return true;
+}
+
++ (bool)parseHdaCodecString_Linux:(NSString *)hdaCodecString index:(uint32_t)index hdaCodec:(HdaCodec *)hdaCodec
+{
+	// Codec: Realtek Generic
+	// Address: 0
+	// AFG Function Id: 0x1 (unsol 1)
+	// Vendor Id: 0x10ec1220
+	//
+	
+	hdaCodecString = [hdaCodecString stringByReplacingOccurrencesOfString:@"\r" withString:@""];
+	NSArray *codecArray = [hdaCodecString componentsSeparatedByString:@"Codec:"];
+	hdaCodecString = codecArray[index + 1];
+	NSRange nodeRange = [hdaCodecString rangeOfString:@"Node"];
+	
+	if (nodeRange.location == NSNotFound)
+		return false;
+	
+	NSString *headerString = [hdaCodecString substringWithRange:NSMakeRange(0, nodeRange.location)];
+	headerString = [@"Codec:" stringByAppendingString:headerString];
+	NSString *allNodesString = [hdaCodecString substringFromIndex:nodeRange.location];
+	NSArray *nodeArray = [allNodesString componentsSeparatedByString:@"Node"];
+
+	[HdaCodec parseHdaCodecHeader_Linux:headerString hdaCodec:hdaCodec];
 	
 	hdaCodec.widgets = [NSMutableArray array];
 	
@@ -1034,19 +1082,26 @@
 	return true;
 }
 
-+ (bool)parseHdaCodecString:(NSString *)hdaCodecString hdaCodec:(HdaCodec **)hdaCodec
++ (int)parseHdaCodecString:(NSString *)hdaCodecString index:(uint32_t)index hdaCodec:(HdaCodec **)hdaCodec hdaCodecArray:(NSMutableArray **)hdaCodecArray
 {
 	*hdaCodec = [[HdaCodec alloc] init];
 	
-	if ([hdaCodecString rangeOfString:@"Codec"].location != NSNotFound)
+	if ([hdaCodecString rangeOfString:@"Codec"].location == NSNotFound)
+		return 0;
+	
+	if ([hdaCodecString rangeOfString:@"Pin config:"].location != NSNotFound)
+		return [HdaCodec parseHdaCodecString_Voodoo:hdaCodecString hdaCodec:*hdaCodec];
+	else if ([hdaCodecString rangeOfString:@"[Pin Complex]"].location != NSNotFound)
 	{
-		if ([hdaCodecString rangeOfString:@"Pin config:"].location != NSNotFound)
-			return [HdaCodec parseHdaCodecString_Voodoo:hdaCodecString hdaCodec:*hdaCodec];
-		else if ([hdaCodecString rangeOfString:@"[Pin Complex]"].location != NSNotFound)
-			return [HdaCodec parseHdaCodecString_Linux:hdaCodecString hdaCodec:*hdaCodec];
+		[HdaCodec getHdaCodecArray_Linux:hdaCodecString hdaCodecArray:hdaCodecArray];
+		
+		if ([*hdaCodecArray count] > 1)
+			return 2;
+		
+		return [HdaCodec parseHdaCodecString_Linux:hdaCodecString index:index hdaCodec:*hdaCodec];
 	}
 	
-	return false;
+	return 0;
 }
 
 + (bool)parseHdaCodecData:(uint8_t *)hdaCodecData length:(uint32_t)length hdaCodec:(HdaCodec **)hdaCodec

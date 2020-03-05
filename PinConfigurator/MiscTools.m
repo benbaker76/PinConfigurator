@@ -137,3 +137,4 @@ uint32_t getHexInt(NSString *valueString)
 	
 	return value;
 }
+

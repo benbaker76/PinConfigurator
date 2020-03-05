@@ -49,6 +49,8 @@
 	if ((filePath = [mainBundle pathForResource:@"Codecs" ofType:@"plist" inDirectory:@"Audio"]))
 		_codecsArray = [[NSArray arrayWithContentsOfFile:filePath] retain];
 	
+	_selectCodecArray = [[NSMutableArray array] retain];
+	
 	if (getIORegAudioDeviceArray(&_audioDeviceArray))
 	{
 		for (AudioDevice *audioDevice in _audioDeviceArray)
@@ -97,6 +99,10 @@
 {
 	[_originalNodeArray release];
 	[_nodeArray release];
+	[_controllersDictionary release];
+	[_vendorsDictionary release];
+	[_codecsArray release];
+	[_selectCodecArray release];
 	
 	[super dealloc];
 }
@@ -359,6 +365,7 @@
 			[outputString appendString:@" "];
 		
 		AudioNode *audioNode = [_nodeArray objectAtIndex:i];
+		
 		NSInteger address = [_codecAddressPopUpButton indexOfSelectedItem];
 		[outputString appendString:[audioNode pinConfigString:(uint32_t)address]];
 	}
@@ -552,6 +559,10 @@
 	{
 		return (item ? 0 : [_audioDeviceArray count]);
 	}
+	else if (outlineView == [self selectCodecOutlineView])
+	{
+		return (item ? 0 : [_selectCodecArray count]);
+	}
 	
 	return 0;
 }
@@ -692,6 +703,26 @@
 				break;
 		}
 	}
+	else if (outlineView == [self selectCodecOutlineView])
+	{
+		HdaCodec *codec = item;
+		
+		switch ([[tableColumn identifier] intValue])
+		{
+			case 0:
+				result.textField.stringValue = codec.name;
+				break;
+			case 1:
+				result.textField.stringValue = [NSString stringWithFormat:@"0x%X", codec.address];
+				break;
+			case 2:
+				result.textField.stringValue = [NSString stringWithFormat:@"0x%08X", codec.vendorID];
+				break;
+			case 3:
+				result.textField.stringValue = [NSString stringWithFormat:@"0x%08X", codec.revisionID];
+				break;
+		}
+	}
 	
 	return result;
 }
@@ -710,6 +741,8 @@
 		return (item ? nil : [_hdaConfigDefaultArray objectAtIndex:index]);
 	else if (outlineView == [self importIORegOutlineView])
 		return (item ? nil : [_audioDeviceArray objectAtIndex:index]);
+	else if (outlineView == [self selectCodecOutlineView])
+		return (item ? nil : [_selectCodecArray objectAtIndex:index]);
 	
 	return nil;
 }
@@ -834,10 +867,22 @@
 
 - (void)parseConfigString:(NSString *)configString
 {
+	int result = 0;
+	
 	[self clear];
 	
-	if ([HdaCodec parseHdaCodecString:configString hdaCodec:&_hdaCodec])
-		[self parseCodec:_hdaCodec];
+	if ((result = [HdaCodec parseHdaCodecString:configString index:0 hdaCodec:&_hdaCodec hdaCodecArray:&_selectCodecArray]))
+	{
+		if (result == 2)
+		{
+			[_hdaCodecString release];
+			_hdaCodecString = [configString retain];
+			[_selectCodecOutlineView reloadData];
+			[NSApp beginSheet:_selectCodecPanel modalForWindow:[self mainWindow] modalDelegate:0 didEndSelector:0 contextInfo:0];
+		}
+		else
+			[self parseCodec:_hdaCodec];
+	}
 	else
 		[self parseConfigData:stringToData(configString)];
 	
@@ -1352,6 +1397,29 @@
 {
 	[NSApp endSheet:[self importIORegPanel]];
 	[[self importIORegPanel] orderOut:sender];
+}
+
+- (IBAction)selectCodecCancel:(id)sender
+{
+	[NSApp endSheet:[self selectCodecPanel]];
+	[[self selectCodecPanel] orderOut:sender];
+}
+
+- (IBAction)selectCodecSelect:(id)sender
+{
+	[NSApp endSheet:[self selectCodecPanel]];
+	[[self selectCodecPanel] orderOut:sender];
+	
+	uint32_t index = (uint32_t)[[self selectCodecOutlineView] selectedRow];
+	
+	if (index == -1)
+		index = 0;
+	
+	if (![HdaCodec parseHdaCodecString_Linux:_hdaCodecString index:index hdaCodec:_hdaCodec])
+		return;
+	
+	[self parseCodec:_hdaCodec];
+	[self update];
 }
 
 - (IBAction)layoutIDAction:(id)sender
