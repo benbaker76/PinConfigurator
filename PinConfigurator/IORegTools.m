@@ -11,31 +11,27 @@
 #include "AudioDevice.h"
 #include <IOKit/IOKitLib.h>
 
-bool getIORegChild(io_service_t device, NSString *name, io_service_t *foundDevice, bool recursive)
+bool getIORegChild(io_service_t device, NSArray *nameArray, io_service_t *foundDevice, uint32_t *foundIndex, bool recursive)
 {
-	kern_return_t kr;
 	io_iterator_t childIterator;
-	
-	kr = IORegistryEntryGetChildIterator(device, kIOServicePlane, &childIterator);
+	kern_return_t kr = IORegistryEntryCreateIterator(device, kIOServicePlane, (recursive ? kIORegistryIterateRecursively : 0), &childIterator);
 	
 	if (kr != KERN_SUCCESS)
 		return false;
 	
 	for (io_service_t childDevice; IOIteratorIsValid(childIterator) && (childDevice = IOIteratorNext(childIterator)); IOObjectRelease(childDevice))
 	{
-		if (IOObjectConformsTo(childDevice, [name UTF8String]))
+		for (int i = 0; i < [nameArray count]; i++)
 		{
-			*foundDevice = childDevice;
-			
-			IOObjectRelease(childIterator);
-			
-			return true;
-		}
-		
-		if (recursive)
-		{
-			if (getIORegChild(childDevice, name, foundDevice, recursive))
+			if (IOObjectConformsTo(childDevice, [[nameArray objectAtIndex:i] UTF8String]))
+			{
+				*foundDevice = childDevice;
+				*foundIndex = i;
+				
+				IOObjectRelease(childIterator);
+				
 				return true;
+			}
 		}
 	}
 	
@@ -44,10 +40,8 @@ bool getIORegChild(io_service_t device, NSString *name, io_service_t *foundDevic
 
 bool getIORegParent(io_service_t device, NSString *name, io_service_t *foundDevice, bool recursive)
 {
-	kern_return_t kr;
 	io_iterator_t parentIterator;
-	
-	kr = IORegistryEntryGetParentIterator(device, kIOServicePlane, &parentIterator);
+	kern_return_t kr = IORegistryEntryCreateIterator(device, kIOServicePlane, (recursive ? kIORegistryIterateRecursively : 0) | kIORegistryIterateParents, &parentIterator);
 	
 	if (kr != KERN_SUCCESS)
 		return false;
@@ -61,12 +55,6 @@ bool getIORegParent(io_service_t device, NSString *name, io_service_t *foundDevi
 			IOObjectRelease(parentIterator);
 			
 			return true;
-		}
-		
-		if (recursive)
-		{
-			if (getIORegParent(parentDevice, name, foundDevice, recursive))
-				return true;
 		}
 	}
 	
@@ -114,6 +102,13 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 		
 		for (io_service_t device; IOIteratorIsValid(iterator) && (device = IOIteratorNext(iterator)); IOObjectRelease(device))
 		{
+			if (IOObjectConformsTo(device, "IOPCIDevice"))
+			{
+				IOObjectRelease(iterator);
+				IOObjectRelease(device);
+				break;
+			}
+			
 			if (!IOObjectConformsTo(device, "IOAudioDevice"))
 				continue;
 			
