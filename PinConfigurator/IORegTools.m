@@ -104,7 +104,6 @@ bool getIORegAudioDeviceArray(NSMutableArray **audioDeviceArray)
 		{
 			if (IOObjectConformsTo(device, "IOPCIDevice"))
 			{
-				IOObjectRelease(iterator);
 				IOObjectRelease(device);
 				break;
 			}
