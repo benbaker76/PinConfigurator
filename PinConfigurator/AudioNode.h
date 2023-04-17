@@ -14,8 +14,6 @@
 #define LONIBBLE(n) ((char)(n) & 0xF)
 #define HINIBBLE(n) ((char)(((char)(n) >> 4) & 0xF))
 
-#define HDA_EAPD_BTL_ENABLE_EAPD        0x00000002
-
 enum
 {
 	kHdaPinCapabilitiesImpendance	= (1 << 0),

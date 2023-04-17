@@ -9,6 +9,7 @@
 #import "AudioNode.h"
 #import "NSString+Pin.h"
 #import "NSColor+Pin.h"
+#import "HdaVerbs.h"
 #import <AppKit/AppKit.h>
 
 @implementation AudioNode
