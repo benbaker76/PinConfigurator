@@ -58,4 +58,4 @@ Switch <Ignore disable devices> excludes from the list of nodes disabled at the 
 
 ## Credits
 - saxmms for writing the original software on which this project is based
-- [headkaze](https://github.com/headkaze) for reversing the software, updating and maintaining it
+- [Ben Baker](https://github.com/benbaker76) for reversing the software, updating and maintaining it
