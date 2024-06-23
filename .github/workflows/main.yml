@@ -22,7 +22,6 @@ jobs:
           scheme: PinConfigurator
           destination: platform=macOS
           configuration: Debug
-          arch: x86_64
           action: build
       - name: Xcodebuild Release
         uses: sersoft-gmbh/xcodebuild-action@v3
@@ -31,7 +30,6 @@ jobs:
           scheme: PinConfigurator
           destination: platform=macOS
           configuration: Release
-          arch: x86_64
           action: build
       - name: Prepare release image
         run: |
