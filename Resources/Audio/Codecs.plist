@@ -36,12 +36,28 @@
 	</dict>
 	<dict>
 		<key>DeviceID</key>
+		<integer>283902485</integer>
+		<key>RevisionID</key>
+		<integer>0</integer>
+		<key>Name</key>
+		<string>Realtek ALC215</string>
+	</dict>	
+	<dict>
+		<key>DeviceID</key>
 		<integer>283902497</integer>
 		<key>RevisionID</key>
 		<integer>0</integer>
 		<key>Name</key>
 		<string>Realtek ALC221</string>
 	</dict>
+	<dict>
+		<key>DeviceID</key>
+		<integer>283902498</integer>
+		<key>RevisionID</key>
+		<integer>0</integer>
+		<key>Name</key>
+		<string>Realtek ALC222</string>
+	</dict>	
 	<dict>
 		<key>DeviceID</key>
 		<integer>283902501</integer>
@@ -82,6 +98,14 @@
 		<key>Name</key>
 		<string>Realtek ALC236</string>
 	</dict>
+	<dict>
+		<key>DeviceID</key>
+		<integer>283902533</integer>
+		<key>RevisionID</key>
+		<integer>0</integer>
+		<key>Name</key>
+		<string>Realtek ALC245</string>
+	</dict>	
 	<dict>
 		<key>DeviceID</key>
 		<integer>283902549</integer>
@@ -268,12 +292,28 @@
 	</dict>
 	<dict>
 		<key>DeviceID</key>
+		<integer>283902599</integer>
+		<key>RevisionID</key>
+		<integer>0</integer>
+		<key>Name</key>
+		<string>Realtek ALC287</string>
+	</dict>	
+	<dict>
+		<key>DeviceID</key>
 		<integer>283902600</integer>
 		<key>RevisionID</key>
 		<integer>0</integer>
 		<key>Name</key>
 		<string>Realtek ALC288</string>
 	</dict>
+	<dict>
+		<key>DeviceID</key>
+		<integer>283902601</integer>
+		<key>RevisionID</key>
+		<integer>0</integer>
+		<key>Name</key>
+		<string>Realtek ALC289</string>
+	</dict>	
 	<dict>
 		<key>DeviceID</key>
 		<integer>283902608</integer>
@@ -330,6 +370,14 @@
 		<key>Name</key>
 		<string>Realtek ALC299</string>
 	</dict>
+	<dict>
+		<key>DeviceID</key>
+		<integer>283903523</integer>
+		<key>RevisionID</key>
+		<integer>0</integer>
+		<key>Name</key>
+		<string>Realtek ALC623</string>
+	</dict>	
 	<dict>
 		<key>DeviceID</key>
 		<integer>283903584</integer>
@@ -402,6 +450,14 @@
 		<key>Name</key>
 		<string>Realtek ALC680</string>
 	</dict>
+	<dict>
+		<key>DeviceID</key>
+		<integer>283903744</integer>
+		<key>RevisionID</key>
+		<integer>0</integer>
+		<key>Name</key>
+		<string>Realtek ALC700</string>
+	</dict>	
 	<dict>
 		<key>DeviceID</key>
 		<integer>283904097</integer>
