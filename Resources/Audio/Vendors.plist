@@ -4,6 +4,8 @@
 <dict>
 	<key>AMD</key>
 	<integer>4098</integer>
+	<key>AMDZEN</key>
+	<integer>4130</integer>
 	<key>AnalogDevices</key>
 	<integer>4564</integer>
 	<key>CirrusLogic</key>
