@@ -19,19 +19,19 @@ jobs:
         uses: sersoft-gmbh/xcodebuild-action@v3
         with:
           project: PinConfigurator.xcodeproj
-          # scheme: # optional
-          # destination: # optional
+          scheme:  PinConfigurator
+          destination: platform=macOS
           configuration: Debug
-          #build-settings: -target PinConfigurator
+          build-settings: -target PinConfigurator
           arch: x86_64
           action: build
       - name: Xcodebuild Release
         uses: sersoft-gmbh/xcodebuild-action@v3
         with:
           project: PinConfigurator.xcodeproj
-        # destination: # optional
+          destination: platform=macOS
           configuration: Release
-          #build-settings: -target PinConfigurator
+          build-settings: -target PinConfigurator
           arch: x86_64
           action: build
       - name: Prepare release image
@@ -53,11 +53,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: build/*.dmg
-      #- name: Upload to Artifacts
-      #  uses: actions/upload-artifact@v4
-      #  with:
-      #    name: Artifacts
-      #    path: build/*/*.zip
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artifacts
+          path: build/*/*.zip
       - name: Upload to Release
         if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
