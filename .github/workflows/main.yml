@@ -7,6 +7,9 @@ on:
   release:
     types: [published]
 
+env:
+  PROJECT_TYPE: APP
+
 jobs:
   build:
     name: Build
@@ -15,43 +18,10 @@ jobs:
       JOB_TYPE: BUILD
     steps:
       - uses: actions/checkout@v4
-      - name: Xcodebuild Debug
-        uses: sersoft-gmbh/xcodebuild-action@v3
-        with:
-          project: PinConfigurator.xcodeproj
-          scheme: PinConfigurator
-          destination: platform=macOS
-          configuration: Debug
-          action: build
-          xcargs: "MACOSX_DEPLOYMENT_TARGET=11.0"
-      - name: Xcodebuild Release
-        uses: sersoft-gmbh/xcodebuild-action@v3
-        with:
-          project: PinConfigurator.xcodeproj
-          scheme: PinConfigurator
-          destination: platform=macOS
-          configuration: Release
-          action: build
-          xcargs: "MACOSX_DEPLOYMENT_TARGET=11.0"
-      - name: Prepare release image
-        run: |
-           mkdir build/Release-App
-           mv build/Release/PinConfigurator.app build/Release-App/
-      - name: Prepare debug image
-        run: |
-          mkdir build/Debug-App
-          mv build/Debug/PinConfigurator.app build/Debug-App/
-      - name: Create DMG image
-        run: |
-          brew install create-dmg
-          export VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" build/Release-App/PinConfigurator.app/Contents/Info.plist)
-          echo $VERSION
-          create-dmg --no-internet-enable --sandbox-safe --window-size 450 450 build/PinConfigurator-${VERSION}-Debug.dmg build/Debug-App/
-          create-dmg --no-internet-enable --sandbox-safe --window-size 450 450 build/PinConfigurator-${VERSION}-Release.dmg build/Release-App/
-      - name: Upload app
-        uses: actions/upload-artifact@v4
-        with:
-          path: build/*.dmg
+      - uses: actions/checkout@v4
+      - run: xcodebuild -jobs 1 -configuration Debug -arch x86_64
+      - run: xcodebuild -jobs 1 -configuration Release -arch x86_64
+
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -62,6 +32,6 @@ jobs:
         uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/*.dmg
+          file: build/*/*.zip
           tag: ${{ github.ref }}
           file_glob: true
