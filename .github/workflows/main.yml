@@ -8,7 +8,7 @@ on:
     types: [published]
 
 env:
-  PROJECT_TYPE: KEXT
+  PROJECT_TYPE: APP
 
 jobs:
   build:
