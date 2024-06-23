@@ -32,5 +32,5 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/*/*.zip
-          tag: ${{ github.ref }}
+          tag: "v${{ env.PINCONFIGURATOR_VER }}"
           file_glob: true 
