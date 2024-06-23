@@ -21,7 +21,7 @@ jobs:
       - name: Extract Version
         id: extract_version
         run: |
-          VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" PinConfigurator.xcodeproj/Info.plist)
+          VERSION=$(grep CURRENT_PROJECT_VERSION PinConfigurator.xcodeproj/project.pbxproj | awk -F' = ' '{ print $2 }' | tr -d ';')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Build Debug
         run: xcodebuild -jobs 1 -configuration Debug -arch x86_64 SYMROOT=$PWD/build
@@ -42,7 +42,5 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/*.zip
-          tag: ${{ github.ref }}
-          file_glob: true
-          name: "${{ env.VERSION }}"
-          body: "Release notes for version ${{ env.VERSION }}"
+          tag: "${{ env.VERSION }}"
+          overwrite: true
