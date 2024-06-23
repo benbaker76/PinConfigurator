@@ -23,6 +23,7 @@ jobs:
           destination: platform=macOS
           configuration: Debug
           action: build
+          xcargs: "MACOSX_DEPLOYMENT_TARGET=11.0"
       - name: Xcodebuild Release
         uses: sersoft-gmbh/xcodebuild-action@v3
         with:
@@ -31,6 +32,7 @@ jobs:
           destination: platform=macOS
           configuration: Release
           action: build
+          xcargs: "MACOSX_DEPLOYMENT_TARGET=11.0"
       - name: Prepare release image
         run: |
            mkdir build/Release-App
