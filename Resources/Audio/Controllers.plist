@@ -50,7 +50,21 @@
 	<string>Intel 200 Series HD Audio Controller</string>
 	<key>8086A348</key>
 	<string>Intel 300 Series HD Audio Controller</string>
-	<key>80860A0C</key>
+	<key>8086A3F0</key>
+	<string>Intel 400 Series HD Audio Controller</string>
+	<key>8086F1C8</key>
+	<string>Intel 400 Series HD Audio Controller</string>
+	<key>8086F0C8</key>
+	<string>Intel 500 Series HD Audio Controller</string>
+	<key>808643C8</key>
+	<string>Intel 500 Series HD Audio Controller</string>
+	<key>80867AD0</key>
+	<string>Intel 600 Series HD Audio Controller</string>
+	<key>808651C8</key>
+	<string>Alder Lake PCH-P High Definition Audio Controller</string>
+	<key>80867A50</key>
+	<string>Intel 700 Series HD Audio Controller</string>						
+	<key>80860A0C</key>	
 	<string>Intel Haswell HD Audio Controller</string>
 	<key>80860C0C</key>
 	<string>Intel Ivy Bridge/Haswell HD Audio Controller</string>
