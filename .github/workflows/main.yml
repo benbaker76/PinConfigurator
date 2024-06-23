@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Xcodebuild Debug
-        uses: sersoft-gmbh/xcodebuild-action@v4
+        uses: sersoft-gmbh/xcodebuild-action@v3
         with:
           project: PinConfigurator.xcodeproj
           # scheme: # optional
@@ -26,7 +26,7 @@ jobs:
           arch: x86_64
           action: build
       - name: Xcodebuild Release
-        uses: sersoft-gmbh/xcodebuild-action@v4
+        uses: sersoft-gmbh/xcodebuild-action@v3
         with:
           project: PinConfigurator.xcodeproj
         # destination: # optional
@@ -50,11 +50,11 @@ jobs:
           create-dmg --no-internet-enable --sandbox-safe --window-size 450 450 build/PinConfigurator-${VERSION}-Debug.dmg build/Debug-App/
           create-dmg --no-internet-enable --sandbox-safe --window-size 450 450 build/PinConfigurator-${VERSION}-Release.dmg build/Release-App/
       - name: Upload app
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           path: build/*.dmg
       #- name: Upload to Artifacts
-      #  uses: actions/upload-artifact@v4
+      #  uses: actions/upload-artifact@v3
       #  with:
       #    name: Artifacts
       #    path: build/*/*.zip
