@@ -14,7 +14,7 @@ jobs:
     env:
       JOB_TYPE: BUILD
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Xcodebuild Debug
         uses: sersoft-gmbh/xcodebuild-action@v3
         with:
@@ -50,11 +50,11 @@ jobs:
           create-dmg --no-internet-enable --sandbox-safe --window-size 450 450 build/PinConfigurator-${VERSION}-Debug.dmg build/Debug-App/
           create-dmg --no-internet-enable --sandbox-safe --window-size 450 450 build/PinConfigurator-${VERSION}-Release.dmg build/Release-App/
       - name: Upload app
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: build/*.dmg
       #- name: Upload to Artifacts
-      #  uses: actions/upload-artifact@v3
+      #  uses: actions/upload-artifact@v4
       #  with:
       #    name: Artifacts
       #    path: build/*/*.zip
