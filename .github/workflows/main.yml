@@ -19,19 +19,18 @@ jobs:
         uses: sersoft-gmbh/xcodebuild-action@v3
         with:
           project: PinConfigurator.xcodeproj
-          scheme:  PinConfigurator
+          scheme: PinConfigurator
           destination: platform=macOS
           configuration: Debug
-          build-settings: -target PinConfigurator
           arch: x86_64
           action: build
       - name: Xcodebuild Release
         uses: sersoft-gmbh/xcodebuild-action@v3
         with:
           project: PinConfigurator.xcodeproj
+          scheme: PinConfigurator
           destination: platform=macOS
           configuration: Release
-          build-settings: -target PinConfigurator
           arch: x86_64
           action: build
       - name: Prepare release image
@@ -65,4 +64,4 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/*.dmg
           tag: ${{ github.ref }}
-          file_glob: true     
+          file_glob: true
