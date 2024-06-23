@@ -18,20 +18,24 @@ jobs:
       JOB_TYPE: BUILD
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-      - run: xcodebuild -jobs 1 -configuration Debug -arch x86_64
-      - run: xcodebuild -jobs 1 -configuration Release -arch x86_64
-
+      - name: Build Debug
+        run: xcodebuild -jobs 1 -configuration Debug -arch x86_64 SYMROOT=$PWD/build
+      - name: Build Release
+        run: xcodebuild -jobs 1 -configuration Release -arch x86_64 SYMROOT=$PWD/build
+      - name: Zip Debug Build
+        run: zip -r build/Debug.zip build/Debug
+      - name: Zip Release Build
+        run: zip -r build/Release.zip build/Release
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Artifacts
-          path: build/*/*.zip
+          path: build/*.zip
       - name: Upload to Release
         if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@e74ff71f7d8a4c4745b560a485cc5fdb9b5b999d
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/*/*.zip
+          file: build/*.zip
           tag: ${{ github.ref }}
           file_glob: true
