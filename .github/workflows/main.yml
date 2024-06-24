@@ -23,6 +23,9 @@ jobs:
         run: |
           VERSION=$(grep -E '^\s*MARKETING_VERSION' PinConfigurator.xcodeproj/project.pbxproj | awk -F' = ' '{ print $2 }' | tr -d ';' | xargs)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Extracted version: $VERSION"
+      - name: Verify Version Output
+        run: echo "The extracted version is $VERSION"
       - name: Build Debug
         run: xcodebuild -jobs 1 -configuration Debug -arch x86_64 SYMROOT=$PWD/build
       - name: Build Release
