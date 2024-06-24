@@ -21,7 +21,7 @@ jobs:
       - name: Extract Version
         id: extract_version
         run: |
-          VERSION=$(grep CURRENT_PROJECT_VERSION PinConfigurator.xcodeproj/project.pbxproj | awk -F' = ' '{ print $2 }' | tr -d ';' | xargs)
+          VERSION=$(grep -E '^\s*MARKETING_VERSION' PinConfigurator.xcodeproj/project.pbxproj | awk -F' = ' '{ print $2 }' | tr -d ';' | xargs)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Build Debug
         run: xcodebuild -jobs 1 -configuration Debug -arch x86_64 SYMROOT=$PWD/build
@@ -41,5 +41,5 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/*.zip
-          tag_name: "${{ env.VERSION }}"
+          tag: "${{ env.VERSION }}"
           overwrite: true
