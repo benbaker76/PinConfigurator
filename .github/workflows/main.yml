@@ -25,12 +25,12 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Build Debug
         run: xcodebuild -jobs 1 -configuration Debug -arch x86_64 SYMROOT=$PWD/build
+      - name: Rename Debug Build
+        run: mv build/Debug.zip build/PinConfigurator_Debug.zip
       - name: Build Release
         run: xcodebuild -jobs 1 -configuration Release -arch x86_64 SYMROOT=$PWD/build
-      - name: Zip Debug Build
-        run: zip -r build/Debug.zip build/Debug
-      - name: Zip Release Build
-        run: zip -r build/Release.zip build/Release
+      - name: Rename Release Build
+        run: mv build/Release.zip build/PinConfigurator_Release.zip
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v4
         with:
