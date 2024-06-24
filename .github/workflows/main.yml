@@ -28,7 +28,7 @@ jobs:
       - name: Build Release
         run: xcodebuild -jobs 1 -configuration Release -arch x86_64 SYMROOT=$PWD/build
       - name: Zip Build
-        run: zip -r PinConfigurator.zip build
+        run: zip -r PinConfigurator.zip build/Release build/Debug
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v4
         with:
