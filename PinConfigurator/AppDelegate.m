@@ -1156,7 +1156,7 @@
 			 [NSApp stopModalWithCode:returnCode];
 		 }];
 		
-		if ([NSApp runModalForWindow:[self mainWindow]] != NSOKButton)
+        if ([NSApp runModalForWindow:[self mainWindow]] != NSModalResponseOK)
 			return;
 		
 		_pinConfigsFileName = [[[openPanel URL] path] retain];
@@ -1165,7 +1165,7 @@
 	NSString *infoPlistPath = [NSString stringWithFormat:@"%@/Contents/Info.plist", _pinConfigsFileName];
 	NSDictionary *infoPlistDictionary = infoPlistDictionary = [NSDictionary dictionaryWithContentsOfFile:infoPlistPath];
 	NSDictionary *ioKitPersonalitiesDictionary = [infoPlistDictionary objectForKey:@"IOKitPersonalities"];
-	NSDictionary *hdaHardwareConfigResourceDictionary = [ioKitPersonalitiesDictionary objectForKey:@"HDA Hardware Config Resource"];
+	NSDictionary *hdaHardwareConfigResourceDictionary = [ioKitPersonalitiesDictionary objectForKey:@"as.vit9696.AppleALC"];
 	_hdaConfigDefaultArray = [[hdaHardwareConfigResourceDictionary objectForKey:@"HDAConfigDefault"] retain];
 	
 	[[self importPinOutlineView] reloadData];
